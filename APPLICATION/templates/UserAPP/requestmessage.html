@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load MyFilters %}
+{% block content %}
+    <div class="container" style="margin-top: 10px;">
+
+    {% include 'UserAPP/RequestButtons.html' %}
+
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'user-app:details' scope filter request_detail.id 'info' %}?page={{page}}&id_service={{id_service}}" style="color: azure;">Карточка заявки</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" style="background: rgb(255, 255, 255);" href="#">Сообщения ({{messages_count}})</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Logs' %}?page={{page}}&id_service={{id_service}}" style="color: azure;">История</a>
+          </li>
+        </ul>
+
+        <div class="row custom-shadow" style="border:1px solid rgba(218, 216, 216, 0.938); border-radius: 10px; background-color: rgb(255, 255, 255)">
+          <div class="col-8" style="margin: 10px; height: 400px;overflow: auto;">
+            <div class="scrollspy-example" >
+              {% for message in messages %}
+              
+              <div class="alert alert-primary" role="alert" style ="margin-top: 20px;">
+                <b>{{message.IDAutor.last_name}} {{message.IDAutor.first_name}}</b> {{message.Data|date:"d.m.Y f"}}                
+                {% if message.IDRecipient %}
+                  <b style="color: brown;">To @{{message.IDRecipient.last_name}} {{message.IDRecipient.first_name}}</b>
+                {% endif %}
+                </br>   
+                    {{message.Text}}<br>
+                    {% if message.File %}
+                    Файл: <a href="{{message.File.url}}" class="link-dark">{{message.File.name}}</a>
+                    {% endif %}  
+              </div>
+              {% endfor %}
+            </div>          
+          </div>          
+          <div class="col-3" style="margin: 10px;">
+            <label for="exampleFormControlTextarea1" class="form-label"><b>Сообщение:</b></label>
+            <form method="POST" action="/user-app/sendmessage/?id={{request_detail.id}}" enctype="multipart/form-data">
+              {% csrf_token %}
+              {% for field in messages_form %}
+                <div class="form-group row my-3"
+                  {% if field.field.required %} 
+                    aria-required="true"
+                  {% else %}
+                    aria-required="false"
+                  {% endif %}
+                >
+                  <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                      {% if field.field.required %}
+                        <span class="required text-danger">*</span>
+                      {% endif %}
+                  </label>
+                  <div>
+                  {{ field|addclass:'form-control' }}
+                    {% if field.help_text %}
+                      <small id="{{ field.id_for_label }}-help" class="form-text text-muted">
+                        {{ field.help_text|safe }}
+                      </small>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}              
+              <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Отправить</button>
+            </form>           
+          </div>
+        </div>
+    </div>
+{% endblock %} 

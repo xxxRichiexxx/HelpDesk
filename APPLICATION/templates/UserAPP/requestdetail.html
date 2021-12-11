@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" style="margin-top: 10px;">
+
+        {% include 'UserAPP/RequestButtons.html' %}
+
+        <ul class="nav nav-tabs">
+          <li class="nav-item" >
+            <a class="nav-link active" style="background: rgb(255, 255, 255);" aria-current="page" href="#">Карточка заявки</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Messages' %}?page={{page}}&id_service={{id_service}}" style="color: azure;">Сообщения ({{messages_count}})</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Logs' %}?page={{page}}&id_service={{id_service}}"  style="color: azure;">История</a>
+          </li>
+        </ul>
+
+        <div class="row custom-shadow" style="border:1px solid rgba(218, 216, 216, 0.938); border-radius: 10px; background-color: rgb(255, 255, 255)">
+          
+          <div class="col" style="margin: 10px; background-color: hsla(214, 89%, 48%, 0.747);border-radius: 10px;">
+            <h5 style="text-align: center; color: rgb(255, 255, 255);"> Автор:</h5>
+            {% if request_detail.IDAutor.Profile.Photo %} 
+              <img src="{{request_detail.IDAutor.Profile.Photo.url}}" class="img-fluid rounded img-thumbnail"  alt="Фото" style="height:100px;">
+            {% else %}
+              <img src="{% static 'no_photo_person.jpg' %}" class="img-fluid rounded img-thumbnail"  alt="Фото" style="height: 100px;">              
+            {% endif %}
+            <br>
+            <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>ФИО:</b><br>
+              {{request_detail.IDAutor.last_name}} {{request_detail.IDAutor.first_name}}</label><br>
+            <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);" ><b>Отдел:</b><br>
+              {{request_detail.IDAutor.Profile.Department}}</label><br>
+            <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Телефон:</b><br>
+              {{request_detail.IDAutor.Profile.Phone}} </label><br>
+            <label for="ServiceList" class="form-label" style="margin-top: 10px;color: rgb(253, 253, 253);"><b>E-mail:</b><br>  
+              <a href= "mailto:{{request_detail.IDAutor.email}}" style="color: rgb(255, 255, 255);">{{request_detail.IDAutor.email}}</a></label><br>                         
+          </div>  
+        
+          <div class="col-3" style="margin: 10px; background-color: hsla(214, 89%, 48%, 0.747);border-radius: 10px;">
+            <h5 style="text-align: center; color: rgb(255, 255, 255);"> Исполнитель:</h5>
+            {% if request_detail.IDExecutor == None %}
+              <h1 style="text-align: center; color: rgb(255, 255, 255);"> ?</h1>
+            {% else %}
+              {% if request_detail.IDExecutor.Profile.Photo %} 
+              <img src="{{request_detail.IDExecutor.Profile.Photo.url}}" class="img-fluid rounded img-thumbnail"  alt="Фото" style="height: 100px;"><br>
+              {% else %}
+              <img src="{% static 'no_photo_person.jpg' %}" class="img-fluid rounded img-thumbnail"  alt="Фото" style="height: 100px;"><br>             
+              {% endif %}
+              <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>ФИО:</b><br>
+                {{request_detail.IDExecutor.last_name}} {{request_detail.IDExecutor.first_name}}</label><br>
+              <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);" ><b>Отдел:</b><br>
+                {{request_detail.IDExecutor.Profile.Department}}</label><br>
+              <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Телефон:</b><br>
+                {{request_detail.IDExecutor.Profile.Phone}} </label><br>
+              <label for="ServiceList" class="form-label" style="margin-top: 10px;color: rgb(253, 253, 253);"><b>E-mail:</b><br>  
+                <a href= "mailto:{{request_detail.IDExecutor.email}}" style="color: rgb(255, 255, 255);">{{request_detail.IDExecutor.email}}</a></label><br>                           
+            {% endif %}
+          </div>    
+
+          <div class="col" style="margin: 10px;background-color: hsla(214, 89%, 48%, 0.747);border-radius: 10px;">
+              <h5 style="text-align: center; color: rgb(255, 255, 255);"> О заявке:</h5>
+              <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Дата создания:</b><br>
+                {{request_detail.DateOfCreation}}</label><br>
+              <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Сервис:</b><br>
+                {{request_detail.IDWork.IDService.Name}}</label><br>
+              <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Работа:</b><br>
+                {{request_detail.IDWork.Name}}</label><br>
+              <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Тема:</b><br>
+                {{request_detail.Name}}</label><br>
+              <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Группа ответственности:</b><br>
+                {{request_detail.IDResponsibilityGroup.Name}}</label><br>
+          </div>        
+
+          <div class="col" style="margin: 10px;background-color: hsla(0, 0%, 85%, 0.747);border-radius: 10px; height: 400px; overflow: auto">
+            <h5 style="text-align: center; color: rgb(0, 0, 0);"> Содержание:</h5>
+            <div>
+              {{request_detail.Сomment}}
+            </div>
+          </div>          
+        </div>         
+    </div>  
+{% endblock %} 

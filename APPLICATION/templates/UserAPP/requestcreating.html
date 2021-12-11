@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container" style="margin-top: 10px;">
+        <div class="row">
+          <div class="col">
+            <!-- Column -->
+          </div>
+          <div class="col" align="center">
+            <h4 style="margin-top: 20px; color: rgb(255, 255, 255);">Создание заявки:</h4>                  
+          </div>
+          <div class="col">
+            <!-- Column -->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-3" style="margin: 10px; height: 50px; text-align: center; vertical-align: middle;">
+            <!-- Column -->
+          </div>
+          <div class="col-6" style="margin: 10px;">
+          
+            <div class="card" style="border-radius: 15px;">
+              <div class="card-header">
+                Шаг 1
+              </div> <!-- card-header -->
+              <div class="card-body Larger shadow">
+                <form action="/user-app/request-creating2">
+                  <div class="form-group row my-3" aria-required="true">
+                    <label for="ServiceList" class="form-label" style="margin-top: 10px;">
+                      Cервис:
+                      <span class="required text-danger">*</span>
+                    </label>
+                    <div>
+                      <input class="form-control" list="Servicelist" name="input_service" required>
+                        <datalist id="Servicelist">
+                          {% for service in services %}              
+                            <option value="{{service.Name}}">
+                          {% endfor %}
+                        </datalist>
+                      <small class="form-text text-muted">
+                          Выберите сервис, в рамках которого требуется создать заявку
+                      </small>
+                    </div>                    
+                  </div>
+                  <div class="col-md-6 offset-md-4">
+                    <a class="btn btn-secondary" href="/user-app/my-requests/Новая/" role="button">Назад</a>
+                    <input type="submit" class="btn btn-outline-dark" style="margin-top: 10px;margin-bottom: 10px;" value="Далее">
+                  </div>
+                </form>
+              </div> <!-- card body -->
+            </div> <!-- card -->
+
+          </div>
+          <div class="col-3" style="margin: 10px; text-align: center; vertical-align: middle;">
+            <!-- Column -->
+          </div>        
+        </div>       
+    </div>  
+{% endblock %} 

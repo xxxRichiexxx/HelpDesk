@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container" style="margin-top: 10px;">
+        <div class="row" style="margin-top: 10px;">
+          <div class="col">
+            {% if scope == 'my-requests' %}
+            <a class="btn btn-outline-light" href="/user-app/request-creating" role="button" >Создать заявку</a>
+            {% endif %}
+          </div>
+          <div class="col" align="center">
+            {% if scope == 'group-requests' %}
+              <h4 style="color: rgb(255, 255, 255);">Заявки группы:</h4>
+            {% elif scope == 'requests-by-category' %}
+              <h4 style="color: rgb(255, 255, 255);">{{service_name}}:</h4>
+            {% else %}
+              <h4 style="color: rgb(255, 255, 255);">Мои заявки:</h4>
+            {% endif %}                  
+          </div>
+          <div class="col">
+            <!-- Column -->
+          </div>
+        </div>
+        <div class="row"  style="margin-top: 10px; margin-bottom: 10px;">
+          <div class="col" style="margin-bottom:10px">            
+            <a
+            {% if filter == 'Новая' %} 
+              class="btn btn-light"
+            {% else %}
+              class="btn btn-outline-light" 
+            {% endif %}
+              href="{% url 'user-app:requests' scope 'Новая' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">    
+              Новых: <br>
+              <b>{{new_requests}}</b>
+            </a> 
+          </div>          
+
+          <div class="col" style="margin-bottom:10px">            
+            <a
+            {% if filter == 'В_работе' %} 
+              class="btn btn-success"
+            {% else %}
+              class="btn btn-outline-success"
+            {% endif %}
+              href="{% url 'user-app:requests' scope 'В_работе' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">           
+              В работе: <br>
+              <b>{{in_work_requests}}</b>
+            </a> 
+          </div> 
+
+          <div class="col" style="margin-bottom:10px">            
+            <a
+            {% if filter == 'На_проверке' %}
+              class="btn btn-warning"
+            {% else %}
+              class="btn btn-outline-warning"
+            {% endif %}
+              <a class="btn btn-outline-warning" href="{% url 'user-app:requests' scope 'На_проверке' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">           
+              На проверке: <br>
+              <b>{{on_checking_requests}}</b>
+            </a> 
+          </div>  
+
+          <div class="col" style="margin-bottom:10px">            
+            <a
+            {% if filter == 'Просрочена' %}
+              class="btn btn-danger"
+            {% else %}
+              class="btn btn-outline-danger"
+            {% endif %}
+              href="{% url 'user-app:requests' scope 'Просрочена' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">
+               Просрочено: <br>
+              <b>{{alarm_requests}}</b>
+            </a> 
+          </div> 
+
+          <div class="col" style="margin-bottom:10px">            
+            <a
+            {% if filter == 'Выполнена' %} 
+              class="btn btn-primary"
+            {% else %}
+              class="btn btn-outline-primary"
+            {% endif %} 
+              href="{% url 'user-app:requests' scope 'Выполнена' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">            
+              Выпонено: <br>
+              <b>{{finished_requests}}</b>
+            </a> 
+          </div> 
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered table-sm custom-shadow " style="background-color: rgb(255, 253, 253);">
+                <thead >      
+                  <tr valign="middle">
+                    <td width="10%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;">№</th>
+                    <td width="10%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;">Дата создания</th> 
+                    <td width="30%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;">Название</th>
+                    <td width="15%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;">Инициатор</th>             
+                    <td width="15%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;">Исполнитель</th>
+                    <td width="10%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;">Группа ответственности</th> 
+                    <td width="5%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;">Оценка</th>
+                    <td width="5%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;"></th>    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for request in requests %}
+                  <tr>          
+                    <td style="text-align: center;">
+                      {{ request.id }}
+                    </td> 
+                    <td>
+                      {{ request.DateOfCreation|date:"d.m.Y f" }}
+                    </td>
+                    <td>
+                      {{ request.Name }}
+                    </td>
+                    <td>
+                      {{ request.IDAutor.get_full_name }}
+                    </td>
+                    <td>
+                      {% if request.IDExecutor != None %}
+                        {{ request.IDExecutor.get_full_name }}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {{ request.IDResponsibilityGroup.Name }}
+                    </td>
+                    <td style="text-align: center;">
+                      {% if request.Status == 'На_проверке' and request.IDAutor == user %}
+                      <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#Modal{{request.id}}"> ? </button>
+                      {% elif request.Rating == None %}
+                        ---
+                      {% else %}
+                        {{request.Rating}}
+                      {% endif %}
+                      <!-- {{ request.Rating }} -->
+                    </td>
+                    <td>
+                      <a class="btn btn-outline-secondary" href="{% url 'user-app:details' scope filter request.id 'info' %}?page={{page_obj.number}}&id_service={{id_service}}" role="button">></a> 
+                    </td>                    
+                  </tr> 
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="Modal{{request.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Заявка №{{request.id}}:</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'user-app:set-rating' %}" method="POST">
+                          <input type="hidden" name="request_id" value="{{request.id}}">
+                          <div class="modal-body">                      
+                              {% csrf_token %}
+                              {{form|crispy}}                      
+                          </div>
+                          <div class="modal-footer">                 
+                            <button type="submit" class="btn btn-secondary">Сохранить</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                                
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% if requests|length == 0 %}
+            <h4 style="color: rgb(255, 255, 255); margin-top: 30px; text-align: center;"> У вас нет заявок c выбранным статусом.</h4>
+            {% endif %}
+          </div>   
+        </div>
+         
+<!-- {# Отрисовываем навигацию паджинатора только если
+    все посты не помещаются на первую страницу #} -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation" class="my-5">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page=1&id_service={{id_service}}">Первая</a></li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&id_service={{id_service}}">
+              Предыдущая
+            </a>
+          </li>
+        {% endif %}
+        {% for i in page_obj.paginator.page_range %}
+            {% if page_obj.number == i %}
+              <li class="page-item active">
+                <span class="page-link">{{ i }}</span>
+              </li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ i }}&id_service={{id_service}}">{{ i }}</a>
+              </li>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}&id_service={{id_service}}">
+              Следующая
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&id_service={{id_service}}">
+              Последняя
+            </a>
+          </li>
+        {% endif %}    
+      </ul>
+    </nav>
+    {% endif %} 
+       
+    </div>  
+{% endblock %}   

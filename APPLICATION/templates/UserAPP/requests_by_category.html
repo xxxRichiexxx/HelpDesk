@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load MyFilters %}
+{% block content %}
+    <div class="container" style="margin-top: 10px;" >
+      {% if not Services_List %}
+        <h4 style="color: rgb(255, 255, 255);">Перечень сервисов не задан. Перейдите в админку и настройте справочник сервисов.</h4>
+      {% endif %}  
+        <div class="row row-cols-3"> 
+            {% for i in services_list %}
+            <div class="col" style="margin-top: 10px;">
+              <div class="card scale custom-shadow" >
+                <div class="card-body" style="text-align: center;">
+                  <h5 class="card-title" style="text-align: center;">{{i.Name}}</h5>
+                  <img src="{{i.Image.url}}" class="img-fluid rounded img-thumbnail" style="height:100px;">
+                  {% if i|Requests_Count > 0 %}
+                    <p class="card-text" style="color: rgb(255, 0, 0);">Новых заявок: {{ i|Requests_Count}}.</p>
+                  {% else %}
+                    <p class="card-text">Новых заявок: {{ i|Requests_Count}}.</p>
+                  {% endif %}
+                  <a href="{% url 'user-app:requests' 'requests-by-category' 'Новая' %}?id_service={{i.id}}" class="btn btn-primary">Перейти</a>
+                </div>
+              </div>
+            </div>  
+            {% endfor %}              
+        </div>      
+    </div>  
+{% endblock %}    

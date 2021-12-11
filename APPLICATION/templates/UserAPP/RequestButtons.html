@@ -1,0 +1,127 @@
+{% load crispy_forms_tags %}
+
+<div class="row" style="margin-top: 10px;">
+  <div class="col">
+    {% if scope == 'category-list' %}
+        <a class="btn btn-outline-light" href="{% url 'user-app:requests-by-category' %}" role="button">Назад</a> 
+    {% else %}
+        <a class="btn btn-outline-light" href="{% url 'user-app:requests' scope filter %}?page={{page}}&id_service={{id_service}}" role="button">Назад</a> 
+    {% endif %}
+  </div> 
+  <div class="col" align="center">
+    <h4 style="color: rgb(255, 255, 255);">Заявка №{{request_detail.id}} {{request_detail.Status}}</h4>           
+  </div>
+  <div class="col" align="right">
+    
+      <div style="background-color: rgb(255, 160, 43); border-radius: 20px; width: 40px; text-align: center;">
+        {% if request_detail.Rating == None %}
+          <h4 style="color: rgb(255, 255, 255);">0</h4>
+        {% else %}
+          <h4 style="color: rgb(255, 255, 255);">{{request_detail.Rating}}</h4>
+        {% endif %}
+      </div>
+    </h4> 
+  </div>
+</div>
+
+<div class="row" style="margin-top:10px; margin-bottom: 10px;">          
+    <div class="btn-group" role="group">
+      {% if request_detail.Status == 'Новая' %}
+        <div class="col">
+        <form action="/user-app/set-status/" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="id" value="{{request_detail.id}}">
+          <input type="hidden" name="Status" value="В_работе">
+          <button type="submit" class="btn btn-success scale" style="width: 100%;">Взять в работу</button>
+        </form>
+        </div>
+      {% elif request_detail.Status == 'В_работе' and request_detail.IDExecutor == user %}
+        <div class="col">
+        <form action="/user-app/set-status/" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="id" value="{{request_detail.id}}">
+          <input type="hidden" name="Status" value="На_проверке">
+          <button type="submit" class="btn btn-warning scale" style="width: 100%;">Завершить работу</button>
+        </form>
+        </div>
+      {% elif request_detail.Status == 'На_проверке' and request_detail.IDAutor == user %}
+        <div class="col">
+        <form action="/user-app/set-status/" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="id" value="{{request_detail.id}}">
+          <input type="hidden" name="Status" value="В_работе">
+          <button type="submit" class="btn btn-warning scale" style="width: 100%;">На доработку</button>
+        </form>
+        </div>
+      {% else %}
+        <div class="col">
+          <button disabled type="submit" class="btn btn-warning scale" style="width: 100%;">Завершить работу</button>
+        </div>
+      {% endif %}
+      <div class="col">
+        {% if request_detail.Status == 'На_проверке' or request_detail.Status == 'Выполнена' %}
+          <button disabled type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
+        {% else %}
+          <button type="button" class="btn btn-danger scale" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
+        {% endif %}
+      </div>
+      <div class="col">
+        {% if request_detail.Status == 'На_проверке' and request_detail.IDAutor == user %}
+          <button type="button" class="btn btn-primary scale" data-bs-toggle="modal" data-bs-target="#RatingModal" style="width: 100%;">Оценить</button>
+        {% else %}
+          <button disabled type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RatingModal" style="width: 100%;">Оценить</button>
+        {% endif %}
+      </div>
+    </div>
+</div>  
+
+<!-- ExecutorModal -->
+<div class="modal fade" id="ExecutorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Эскалация заявки</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action='/user-app/escalation/' method="POST">
+        <input type="hidden" name="id" value="{{request_detail.id}}">        
+        {% csrf_token %}
+      <div class="modal-body">        
+        <select class="form-select" aria-label="Default select example" name="group_id">          
+          <option selected value="{{request_detail.IDResponsibilityGroup.id}}">{{request_detail.IDResponsibilityGroup.Name}}</option>
+          {% for group in groups %}
+            <option value="{{group.id}}">{{group.Name}}</option>
+          {% endfor %}
+        </select>        
+      </div>
+      <div class="modal-footer">        
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- RatingModal -->
+<div class="modal fade" id="RatingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Оценка заявки</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/user-app/set-rating/" method="POST">
+          <input type="hidden" name="request_id" value="{{request_detail.id}}">
+          <div class="modal-body">                      
+              {% csrf_token %}
+              {{form|crispy}}                      
+          </div>
+          <div class="modal-footer">                 
+            <button type="submit" class="btn btn-secondary">Сохранить</button>
+          </div>
+        </form>
+      </div>      
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container" style="margin-top: 10px;">
+
+    {% include 'UserAPP/RequestButtons.html' %}
+
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'user-app:details' scope filter request_detail.id 'info' %}?State={{request_detail.Status}}&page={{page}}&id_service={{id_service}}" style="color: azure;">Карточка заявки</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Messages' %}?State={{request_detail.Status}}&page={{page}}&id_service={{id_service}}" style="color: azure;">Сообщения ({{messages_count}})</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" style="background: rgb(255, 255, 255);" href="#" >История</a>
+          </li>
+        </ul>
+
+        <div class="row custom-shadow" style="border:1px solid rgba(218, 216, 216, 0.938); border-radius: 10px; background-color: rgb(255, 255, 255)">
+          <div class="col-8" style="margin: 10px; height: 400px; overflow: auto;">
+            <div class="scrollspy-example">
+              {% for log in logs %}
+              <b>{{log.Date}}</b>
+              {{log.Action}}
+              <br>             
+              {% endfor %}
+            </div>          
+          </div>          
+
+        </div>
+    </div>
+{% endblock %} 

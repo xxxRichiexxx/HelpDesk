@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load MyFilters %}
+{% block content %}
+    <div class="container" style="margin-top: 10px;">
+        <div class="row">
+          <div class="col">
+            <!-- Column -->
+          </div>
+          <div class="col" align="center">
+            <h4 style="margin-top: 20px;color: rgb(255, 255, 255)">Создание заявки:</h4>                  
+          </div>
+          <div class="col">
+            <!-- Column -->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-3" style="margin: 10px; height: 50px; text-align: center; vertical-align: middle;">
+            <!-- Column -->
+          </div>
+          <div class="col-6" style="margin: 10px;">
+               
+            <div class="card" style="border-radius: 15px;">
+              <div class="card-header">
+                Шаг 2
+              </div> <!-- card-header -->
+              <div class="card-body Larger shadow">
+                <!--Далее идет стандартный кусок кода для вывода ошибок формы. Используется всегда. -->
+                {% if form.errors %}
+                    {% for field in form %}
+                      {% for error in field.errors %}            
+                        <div class="alert alert-danger">
+                          {{ error|escape }}
+                        </div>
+                      {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                      <div class="alert alert-danger">
+                        {{ error|escape }}
+                      </div>
+                    {% endfor %}
+                {% endif %}
+      
+                <form method="post"
+                  {% if action_url %}
+                    action="{% url action_url %}"
+                  {% endif %}
+                >
+                  {% csrf_token %}
+      
+                <!--Далее идет стандартный кусок кода для вывода формы через цикл. Используется всегда. -->
+                  {% for field in form %}
+                    <div class="form-group row my-3"
+                      {% if field.field.required %} 
+                        aria-required="true"
+                      {% else %}
+                        aria-required="false"
+                      {% endif %}
+                    >
+                      <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                          {% if field.field.required %}
+                            <span class="required text-danger">*</span>
+                          {% endif %}
+                      </label>
+                      <div>
+                      {{ field|addclass:'form-control' }}
+                        {% if field.help_text %}
+                          <small id="{{ field.id_for_label }}-help" class="form-text text-muted">
+                            {{ field.help_text|safe }}
+                          </small>
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% endfor %}      
+      
+                  <div class="col-md-6 offset-md-5">
+                    <button type="submit" class="btn btn-primary">
+                      Создать
+                    </button>
+                  </div>
+                </form>
+              </div> <!-- card body -->
+            </div> <!-- card -->      
+
+          </div>
+          <div class="col-3" style="margin: 10px; text-align: center; vertical-align: middle;">
+            <!-- Column -->
+          </div>        
+        </div>       
+    </div>  
+{% endblock %} 
