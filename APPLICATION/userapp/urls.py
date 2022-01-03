@@ -1,9 +1,16 @@
-from userapp import views
 from django.urls import path
+
+from userapp import views
+from search.views import SearchView
 
 app_name = 'user-app'
 
 urlpatterns = [
+    path('all-requests/search/',
+         SearchView.as_view(),
+         {'scope': 'all-requests',
+          'filter': 'search'},
+         name='search'),
     path('all-requests/<str:filter>/',
          views.AllRequests.as_view(),
          {'scope': 'all-requests'},

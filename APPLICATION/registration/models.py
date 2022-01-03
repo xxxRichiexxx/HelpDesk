@@ -4,6 +4,10 @@ from userapp.models import ResponsibilityGroup
 
 
 class Profile(models.Model):
+    """
+    Данна модель расширяет встроенную модель User
+    через связь один к одному, добавляет дополнительные поля.
+    """
     User = models.OneToOneField(User,
                                 on_delete=models.CASCADE,
                                 primary_key=True,

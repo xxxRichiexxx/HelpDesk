@@ -2,6 +2,7 @@
 <html lang="ru"> <!-- Язык сайта - русский -->
 <HEAD>
     <meta charset="utf-8">
+    {# стили бутстрап #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>Helpdesk</title> 
     <style>
@@ -21,6 +22,7 @@
 
 <body style="background-color: rgb(80, 80, 80);">
   <header>
+    {# Навбар #}
     <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="/" style="margin-bottom: 3px;">
@@ -53,7 +55,7 @@
                     {% if scope == 'my-requests' %} 
                     active
                     {% endif %}
-                    " aria-current="page" href="{% url 'user-app:requests' 'my-requests' 'Новая' %}">Мои заявки <span class="badge bg-secondary"> {{user_requests}}</span></a>
+                    " aria-current="page" href="{% url 'user-app:requests' 'my-requests' 'new' %}">Мои заявки <span class="badge bg-secondary"> {{user_requests}}</span></a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link scale" aria-current="page" href="#">Я исполнитель</a>
@@ -64,7 +66,7 @@
                       {% if scope == 'group-requests' %} 
                       active
                       {% endif %}
-                      " aria-current="page" href="{% url 'user-app:requests' 'group-requests' 'Новая' %}">Заявки группы <span class="badge bg-secondary"> {{group_requests}} </span></a>
+                      " aria-current="page" href="{% url 'user-app:requests' 'group-requests' 'new' %}">Заявки группы <span class="badge bg-secondary"> {{group_requests}} </span></a>
                     </li>
                   {% endif %} 
         
@@ -78,7 +80,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                       <li><a class="dropdown-item" href="{% url 'user-app:requests-by-category' %}">По категориям</a></li>
-                      <li><a class="dropdown-item" href="{% url 'user-app:requests' 'all-requests' 'Новая' %}">Общим списком</a></li>
+                      <li><a class="dropdown-item" href="{% url 'user-app:requests' 'all-requests' 'new' %}">Общим списком</a></li>
                     </ul>
                   </li>
               </ul>
@@ -86,8 +88,8 @@
                 <img src="{% static 'letter_icon.png' %}" alt="Фото" style="height: 23px; background-color: rgb(255, 255, 255);">              
                 <span class="badge bg-secondary">{{user_messages_count}}</span>
               </button>              
-              <form class="d-flex" style="margin-bottom: 3px;">
-                <input class="form-control me-2" type="search" placeholder="Введите строку..." aria-label="Search">
+              <form class="d-flex" action="{% url 'user-app:search' %}">
+                <input class="form-control me-2" type="search" placeholder="Введите строку..." aria-label="Search" name='search'>
                 <button class="btn btn-outline-light" type="submit">Поиск</button>
               </form>
             {% endif %} 
@@ -98,27 +100,30 @@
   </header>
   <main> 
     {% block content %}
-        Контент будет размещаться тут.
+        {# Контент будет размещаться тут. #}
     {% endblock %}
+    {# Боковая выезжающая панель с сообщениями #}
     <div class="offcanvas offcanvas-end" tabindex="-1" id="Сообщения" aria-labelledby="offcanvasRightLabel">
       <div class="offcanvas-header">
-        <h5 id="offcanvasRightLabel">Уведомления ({{user_messages_count}}):</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          <h5 id="offcanvasRightLabel">Уведомления <span class="badge bg-secondary">{{user_messages_count}}</span></h5>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <form method="POST" action="/user-app/clean-messages/">
-        {% csrf_token %}  
-        <button type="submit" style="margin-left: 14px;" class="btn btn-primary">Очистить</button>
-      </form>
+        <hr>
       <div class="offcanvas-body">
         {% for message in user_messages %}
-        <div class="alert alert-primary scale Regular shadow" role="alert">
+            <div class="alert alert-primary scale Regular shadow" role="alert">
           <a href="{% url 'user-app:details' scope filter message.IDRequest.id 'info' %}?page={{page_obj.number}}&id_service={{id_service}}" class="link-primary" style="text-align: right;">Заявка: {{message.IDRequest.id}}</a><br>
           <b>{{message.IDAutor.last_name}} {{message.IDAutor.first_name}}</b><br>
           {{message.Text}}
         </div>      
         {% endfor %}
+        <form method="POST" action="/user-app/clean-messages/">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">Очистить</button>
+        </form>
       </div>
     </div>
-  </main> 
+  </main>
+    {# Скрипты бутстрап #}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>

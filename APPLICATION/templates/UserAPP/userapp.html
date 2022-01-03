@@ -21,15 +21,15 @@
             <!-- Column -->
           </div>
         </div>
-        <div class="row"  style="margin-top: 10px; margin-bottom: 10px;">
+        <div class="row"  style="margin-top: 10px; margin-bottom: 10px">
           <div class="col" style="margin-bottom:10px">            
             <a
-            {% if filter == 'Новая' %} 
+            {% if filter == 'new' %} 
               class="btn btn-light"
             {% else %}
               class="btn btn-outline-light" 
             {% endif %}
-              href="{% url 'user-app:requests' scope 'Новая' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">    
+              href="{% url 'user-app:requests' scope 'new' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">    
               Новых: <br>
               <b>{{new_requests}}</b>
             </a> 
@@ -37,12 +37,12 @@
 
           <div class="col" style="margin-bottom:10px">            
             <a
-            {% if filter == 'В_работе' %} 
+            {% if filter == 'in_work' %} 
               class="btn btn-success"
             {% else %}
               class="btn btn-outline-success"
             {% endif %}
-              href="{% url 'user-app:requests' scope 'В_работе' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">           
+              href="{% url 'user-app:requests' scope 'in_work' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">           
               В работе: <br>
               <b>{{in_work_requests}}</b>
             </a> 
@@ -50,12 +50,12 @@
 
           <div class="col" style="margin-bottom:10px">            
             <a
-            {% if filter == 'На_проверке' %}
+            {% if filter == 'on_check' %}
               class="btn btn-warning"
             {% else %}
               class="btn btn-outline-warning"
             {% endif %}
-              <a class="btn btn-outline-warning" href="{% url 'user-app:requests' scope 'На_проверке' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">           
+              <a class="btn btn-outline-warning" href="{% url 'user-app:requests' scope 'on_check' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">           
               На проверке: <br>
               <b>{{on_checking_requests}}</b>
             </a> 
@@ -63,12 +63,12 @@
 
           <div class="col" style="margin-bottom:10px">            
             <a
-            {% if filter == 'Просрочена' %}
+            {% if filter == 'lost' %}
               class="btn btn-danger"
             {% else %}
               class="btn btn-outline-danger"
             {% endif %}
-              href="{% url 'user-app:requests' scope 'Просрочена' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">
+              href="{% url 'user-app:requests' scope 'lost' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">
                Просрочено: <br>
               <b>{{alarm_requests}}</b>
             </a> 
@@ -76,12 +76,12 @@
 
           <div class="col" style="margin-bottom:10px">            
             <a
-            {% if filter == 'Выполнена' %} 
+            {% if filter == 'completed' %} 
               class="btn btn-primary"
             {% else %}
               class="btn btn-outline-primary"
             {% endif %} 
-              href="{% url 'user-app:requests' scope 'Выполнена' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">            
+              href="{% url 'user-app:requests' scope 'completed' %}?id_service={{id_service}}" role="button" style="width:100%; padding-top:20px; padding-bottom:20px">            
               Выпонено: <br>
               <b>{{finished_requests}}</b>
             </a> 
@@ -128,7 +128,7 @@
                       {{ request.IDResponsibilityGroup.Name }}
                     </td>
                     <td style="text-align: center;">
-                      {% if request.Status == 'На_проверке' and request.IDAutor == user %}
+                      {% if request.Status == 'on_check' and request.IDAutor == user %}
                       <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#Modal{{request.id}}"> ? </button>
                       {% elif request.Rating == None %}
                         ---

@@ -1,9 +1,14 @@
+import re
+
 from django import forms
 from django.forms.fields import CharField, EmailField, ImageField, DecimalField
-import re
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class RegistrationForm (forms.Form):
+    """Форма регистраци новго пользователя."""
     Name = CharField(required=True, label="Имя")
     Surname = CharField(required=True, label="Фамилия")
     Department = CharField(required=True, label="Отдел")
@@ -41,13 +46,24 @@ class RegistrationForm (forms.Form):
         if len(cd) < 8:
             raise forms.ValidationError('Пароль должен быть более 8 символов')
         elif re.findall(r'[йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ]', cd):
-            raise forms.ValidationError('Пароль должен содержать только латиницу')
+            raise forms.ValidationError(
+                'Пароль должен содержать только латиницу')
         elif re.findall(r'\W', cd) == []:
-            raise forms.ValidationError('Пароль должен содержать специальные символы')
+            raise forms.ValidationError(
+                'Пароль должен содержать специальные символы')
         elif re.findall(r'\d', cd) == []:
             raise forms.ValidationError('Пароль должен содержать цифры')
         elif re.findall(r'[qwertyuiopasdfghjklzxcvbnm]', cd) == []:
-            raise forms.ValidationError('Пароль должен содержать латинские буквы')
+            raise forms.ValidationError(
+                'Пароль должен содержать латинские буквы')
+        return cd
+
+    def clean_Login(self):
+        cd = self.cleaned_data['Login']
+        user = User.objects.filter(username=cd).exists()
+        if user:
+            raise forms.ValidationError(
+                'Пользователь с таким логином уже существует.')
         return cd
 
     def clean_Password1(self):
@@ -60,8 +76,5 @@ class RegistrationForm (forms.Form):
 
     def clean(self):
         cd = self.cleaned_data
-        if len(self['Password1'].errors) != 0 or len(self['Password2'].errors) != 0:
-            pass
-        elif cd['Password1'] != cd['Password2']:
-            print('Пароли не совпадают')
+        if cd.get('Password1') != cd.get('Password2'):
             raise forms.ValidationError('Пароли не совпадают')

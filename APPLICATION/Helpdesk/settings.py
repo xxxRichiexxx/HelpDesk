@@ -43,12 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'registration',
+    'debug_toolbar',
     'crispy_forms',
+    'registration',
     'authentication',
     'userapp',
     'Filters',
-    'debug_toolbar',
+    'index',
+    'search',
     # General use templates & template tags (should appear first)
     # 'adminlte3',
     # Optional: Django admin theme (must be before django.contrib.admin)

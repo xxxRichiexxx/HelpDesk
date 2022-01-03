@@ -2,7 +2,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from userapp.views import Index
+from index.views import Index
+from search.views import SearchView
 
 urlpatterns = [
     path('', Index.as_view()),    

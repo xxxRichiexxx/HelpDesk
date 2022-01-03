@@ -3,8 +3,16 @@ from django.db.models import (CharField, ImageField, ForeignKey,
                               IntegerField, DurationField, DateTimeField,
                               BooleanField, Model, CASCADE, FileField)
 
+STATUS_CHOICES = (
+    ('new', 'Новая'),
+    ('in_work', 'В работе'),
+    ('on_check', 'На проверке'),
+    ('completed', 'Выполнена'),
+)
+
 
 class Service(Model):
+    """Модель, описывающая предоставляемые сервисы."""
     Name = CharField(max_length=100, verbose_name="Название")
     Image = ImageField(null=True, blank=True)
 
@@ -17,6 +25,7 @@ class Service(Model):
 
 
 class ResponsibilityGroup(Model):
+    """Модель, хрянящая группы ответственности."""
     Name = CharField(max_length=100)
     Default = BooleanField()
 
@@ -29,7 +38,8 @@ class ResponsibilityGroup(Model):
 
 
 class Work(Model):
-    IDService = ForeignKey(Service, on_delete=CASCADE)
+    """Модель, хранящая виды работ в рамках предоставляемых сервисов."""
+    IDService = ForeignKey(Service, on_delete=CASCADE, related_name='works')
     Name = CharField(max_length=100, verbose_name="Название")
     TYPE_CHOICES = (('Инцедент', 'Инцедент'),
                     ('Запрос на обслуживание', 'Запрос на обслуживание'))
@@ -49,6 +59,7 @@ class Work(Model):
 
 
 class Request(Model):
+    """Модель, хранящая заявки(запросы)."""
     IDWork = ForeignKey(
         Work,
         on_delete=CASCADE,
@@ -82,16 +93,10 @@ class Request(Model):
         verbose_name='Исполнитель',
         help_text='Выберите исполнителя заявки',
         )
-    STATUS_CHOICES = (
-        ('Новая', 'Новая'),
-        ('В_работе', 'В работе'),
-        ('На_проверке', 'На проверке'),
-        ('Выполнена', 'Выполнена'),
-        )
     Status = CharField(
         max_length=30,
         choices=STATUS_CHOICES,
-        default='Новая',
+        default='new',
         verbose_name='Статус',
         help_text='Выберите текущий статус заявки',
         )
@@ -120,6 +125,7 @@ class Request(Model):
 
 
 class Message (Model):
+    """Модель, хранящая переписку в рамках одной заявки."""
     IDRequest = ForeignKey(
         Request,
         on_delete=CASCADE,
@@ -173,6 +179,7 @@ class Message (Model):
 
 
 class Log (Model):
+    """Модель, хранящая логи(события) в рамках каждой из заявок."""
     Action = CharField(max_length=100, null=True, blank=True)
     Date = DateTimeField(auto_now=True)
     IDRequest = ForeignKey(Request, on_delete=CASCADE)

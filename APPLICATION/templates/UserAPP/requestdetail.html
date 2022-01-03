@@ -10,10 +10,10 @@
             <a class="nav-link active" style="background: rgb(255, 255, 255);" aria-current="page" href="#">Карточка заявки</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Messages' %}?page={{page}}&id_service={{id_service}}" style="color: azure;">Сообщения ({{messages_count}})</a>
+            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Messages' %}?page={{page}}&id_service={{id_service}}&search={{search}}" style="color: azure;">Сообщения ({{messages_count}})</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Logs' %}?page={{page}}&id_service={{id_service}}"  style="color: azure;">История</a>
+            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Logs' %}?page={{page}}&id_service={{id_service}}&search={{search}}"  style="color: azure;">История</a>
           </li>
         </ul>
 
@@ -21,6 +21,7 @@
           
           <div class="col" style="margin: 10px; background-color: hsla(214, 89%, 48%, 0.747);border-radius: 10px;">
             <h5 style="text-align: center; color: rgb(255, 255, 255);"> Автор:</h5>
+            <hr style="color: rgb(255, 255, 255);margin-top: 5px;">
             {% if request_detail.IDAutor.Profile.Photo %} 
               <img src="{{request_detail.IDAutor.Profile.Photo.url}}" class="img-fluid rounded img-thumbnail"  alt="Фото" style="height:100px;">
             {% else %}
@@ -39,6 +40,7 @@
         
           <div class="col-3" style="margin: 10px; background-color: hsla(214, 89%, 48%, 0.747);border-radius: 10px;">
             <h5 style="text-align: center; color: rgb(255, 255, 255);"> Исполнитель:</h5>
+            <hr style="color: rgb(255, 255, 255);margin-top: 5px;">
             {% if request_detail.IDExecutor == None %}
               <h1 style="text-align: center; color: rgb(255, 255, 255);"> ?</h1>
             {% else %}
@@ -60,6 +62,7 @@
 
           <div class="col" style="margin: 10px;background-color: hsla(214, 89%, 48%, 0.747);border-radius: 10px;">
               <h5 style="text-align: center; color: rgb(255, 255, 255);"> О заявке:</h5>
+              <hr style="color: rgb(255, 255, 255);margin-top: 5px;">
               <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Дата создания:</b><br>
                 {{request_detail.DateOfCreation}}</label><br>
               <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Сервис:</b><br>
@@ -74,6 +77,8 @@
 
           <div class="col" style="margin: 10px;background-color: hsla(0, 0%, 85%, 0.747);border-radius: 10px; height: 400px; overflow: auto">
             <h5 style="text-align: center; color: rgb(0, 0, 0);"> Содержание:</h5>
+              <hr style="color: rgb(255, 255, 255);margin-top: 5px;">
+
             <div>
               {{request_detail.Сomment}}
             </div>

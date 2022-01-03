@@ -1,7 +1,5 @@
 from django import forms
-from django.contrib.auth.models import User
-from django.db.models import fields
-from django.forms.fields import CharField, ChoiceField, FileField
+from django.forms.fields import CharField, ChoiceField
 
 from userapp.models import ResponsibilityGroup, Message
 
@@ -66,8 +64,9 @@ class RatingForm (forms.Form):
 
 
 class MessageTextForm(forms.ModelForm):
+    """Форма отправки сообщенияв рамках заявки."""
 
     class Meta:
         model = Message
         fields = ('IDRecipient', 'Text', 'File')
-        widgets = {'Text': forms.Textarea(attrs={'rows':3})}
+        widgets = {'Text': forms.Textarea(attrs={'rows': 3})}

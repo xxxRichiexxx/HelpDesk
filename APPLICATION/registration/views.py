@@ -8,6 +8,7 @@ User = get_user_model()
 
 
 def registration(request):
+    """Выводим форму для регистрации пользователя и валидируем ее."""
     if request.method == 'GET':
         form = RegistrationForm()
         return render(

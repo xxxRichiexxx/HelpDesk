@@ -6,10 +6,10 @@
 
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="{% url 'user-app:details' scope filter request_detail.id 'info' %}?State={{request_detail.Status}}&page={{page}}&id_service={{id_service}}" style="color: azure;">Карточка заявки</a>
+            <a class="nav-link" aria-current="page" href="{% url 'user-app:details' scope filter request_detail.id 'info' %}?State={{request_detail.Status}}&page={{page}}&id_service={{id_service}}&search={{search}}" style="color: azure;">Карточка заявки</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Messages' %}?State={{request_detail.Status}}&page={{page}}&id_service={{id_service}}" style="color: azure;">Сообщения ({{messages_count}})</a>
+            <a class="nav-link" href="{% url 'user-app:details' scope filter request_detail.id 'Messages' %}?page={{page}}&id_service={{id_service}}&search={{search}}" style="color: azure;">Сообщения ({{messages_count}})</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" style="background: rgb(255, 255, 255);" href="#" >История</a>

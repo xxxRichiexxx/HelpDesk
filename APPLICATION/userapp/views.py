@@ -2,7 +2,7 @@ import datetime as dt
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F, Q
+from django.db.models import F, Q, Count
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.base import ContextMixin, TemplateView
 from django.views.generic.detail import DetailView
@@ -11,32 +11,49 @@ from django.views.generic.list import ListView
 from django.views.decorators.http import require_POST
 from django.contrib.auth import get_user_model
 
-from userapp.forms import MessageTextForm, RatingForm, RequestCreatingForm
-from userapp.models import (Log, Message, Request, ResponsibilityGroup,
-                            Service, Work)
+from .forms import MessageTextForm, RatingForm, RequestCreatingForm
+from .models import (Log, Message, Request, ResponsibilityGroup,
+                     Service, Work, STATUS_CHOICES)
 
 User = get_user_model()
 
 
 class ContextProcessor(ContextMixin):
+    """
+    Т.к есть информация, отображающаяся на всех страницах
+    (например, количество непрочитанных сообщений и т.п),
+    то будем добавлять ее в контекст в данном миксине.
+    Далее, от него унаследуем все последующие представления.
+    """
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        # сохраняем в контекст непрочитанные сообщения пользователя
         context['user_messages'] = Message.objects.select_related(
             'IDAutor',
             'IDRequest',
             ).filter(IDRecipient=user, Status=False)
+        # сохраняем в контекст количество непрочитанных сообщений пользователя
         context['user_messages_count'] = context['user_messages'].count()
+        # сохраняем в контекст количество незавершенных заявок пользователя
         context['user_requests'] = Request.objects.filter(
-            ~Q(Status='Выполнена'),
+            ~Q(Status='completed'),
             IDAutor=user,
             ).count()
-        context['group'] = ResponsibilityGroup.objects.filter(profile__User=user).exists()
+        # сохраняем в контекст булево значение группы ответственности
+        # пользователя
+        # это используется для скрытия/показа кнопки с заявками группы
+        context['group'] = ResponsibilityGroup.objects.filter(
+            profile__User=user).exists()
         if context['group']:
+            # если пользователь состоит в группе ответственности,
+            # то считаем количество заявок на этой группе
             context['group_requests'] = Request.objects.filter(
-                Q(Status='Новая') | Q(Status='В_работе'),
+                Q(Status='new') | Q(Status='in_work'),
                 IDResponsibilityGroup__profile__User=user,
                 ).count()
+        # записываем в контекст такие параметры запроса,
+        # как область, фильтр, сервис
         context['scope'] = self.kwargs.get('scope')
         context['filter'] = self.kwargs.get('filter')
         context['id_service'] = self.request.GET.get('id_service', 'None')
@@ -44,26 +61,33 @@ class ContextProcessor(ContextMixin):
             context['service_name'] = Service.objects.get(
                 id=context['id_service']
                 ).Name
+        context['search'] = self.request.GET.get('search')
         return context
 
 
-class Index(LoginRequiredMixin, ContextProcessor, TemplateView):
-    template_name = 'UserAPP/index.html'
-
-
 class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
+    """
+    Формирует перечень завок в зависимости от области видимости
+    (пользовательские заявки, заявки группы ответственности, все заявки ...)
+    и выбранного фильтра/статуса (в работе и т.п).
+    """
     context_object_name = 'requests'
     paginate_by = 10
     template_name = 'UserAPP/userapp.html'
 
     def get(self, request, *args, **kwargs):
+        """
+        Переопределяем анный метод,
+        чтобы получить заявки, относящиеся к заданной области видимости
+        """
         if self.kwargs['scope'] == 'group-requests':
             self.requests = Request.objects.select_related(
                 'IDWork',
                 'IDAutor',
                 'IDExecutor',
                 'IDResponsibilityGroup',
-                ).filter(IDResponsibilityGroup__profile__User=self.request.user)
+                ).filter(
+                    IDResponsibilityGroup__profile__User=self.request.user)
         elif self.kwargs['scope'] == 'requests-by-category':
             self.requests = Request.objects.select_related(
                 'IDWork',
@@ -88,10 +112,15 @@ class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
+        """
+        Переопределяем данный метод класса,
+        чтобы применить к отображаемым заявкам фильтрацию
+        (новые, в работе и т.п).
+        """
         self.filter = self.kwargs['filter']
-        if self.filter == 'Просрочена':
+        if self.filter == 'lost':
             return self.requests.filter(
-                ~Q(Status='Выполнена'),
+                ~Q(Status='completed'),
                 DateOfCreation__lt=dt.datetime.now() - F('IDWork__ReactionTime') - F('IDWork__TimeOfExecution')
             )
         else:
@@ -101,25 +130,26 @@ class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
         context = super().get_context_data(**kwargs)
         context['form'] = RatingForm()
         context['new_requests'] = self.requests.filter(
-                                        Status='Новая'
+                                        Status='new'
                                         ).count()
         context['in_work_requests'] = self.requests.filter(
-                                        Status='В_работе'
+                                        Status='in_work'
                                         ).count()
         context['on_checking_requests'] = self.requests.filter(
-                                        Status='На_проверке'
+                                        Status='on_check'
                                         ).count()
         context['alarm_requests'] = self.requests.filter(
-                                        ~Q(Status='Выполнена'),
+                                        ~Q(Status='completed'),
                                         DateOfCreation__lt=dt.datetime.now() - F('IDWork__ReactionTime') - F('IDWork__TimeOfExecution')
                                         ).count()
         context['finished_requests'] = self.requests.filter(
-                                        Status='Выполнена'
+                                        Status='completed'
                                         ).count()
         return context
 
 
 class CreateRequest(LoginRequiredMixin, ContextProcessor, TemplateView):
+    """Первый шаг создания заявки."""
     template_name = 'UserAPP/requestcreating.html'
 
     def get_context_data(self, **kwargs):
@@ -129,13 +159,15 @@ class CreateRequest(LoginRequiredMixin, ContextProcessor, TemplateView):
 
 
 class CreateRequest2(LoginRequiredMixin, ContextProcessor, FormView):
+    """Второй шаг создания заявки."""
     template_name = 'UserAPP/requestcreating2.html'
-    success_url = '/user-app/my-requests/Новая/'
+    success_url = '/user-app/my-requests/new/'
     form_class = RequestCreatingForm
 
     def get(self, request, *args, **kwargs):
         input_service = request.GET.get('input_service')
-        self.works = Work.objects.filter(IDService__Name=input_service).values_list('id', 'Name')
+        self.works = Work.objects.filter(
+            IDService__Name=input_service).values_list('id', 'Name')
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -164,13 +196,14 @@ class CreateRequest2(LoginRequiredMixin, ContextProcessor, FormView):
 @require_POST
 @login_required
 def SetRating(request):
+    """Устанавливаем рейтинг(оценку) для заявки."""
     request_id = request.POST.get('request_id')
     request_item = get_object_or_404(Request, id=request_id)
     Form = RatingForm(request.POST)
     if request.user == request_item.IDAutor and Form.is_valid():
         cd = Form.cleaned_data
         request_item.Rating = cd['Rating']
-        request_item.Status = 'Выполнена'
+        request_item.Status = 'completed'
         request_item.save()
         new_log = Log(Action=f'Заявка оценена {request.user} и переведена в состояние "Выполнена"',
                       IDRequest=request_item)
@@ -179,6 +212,11 @@ def SetRating(request):
 
 
 class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
+    """
+    Выводит детализацию по заявке.
+    Используются разные шаблоны в зависимости от того,
+    выводим мы общую информацию, переписку по заявке или логи заявки.
+    """
     queryset = Request.objects.select_related(
                 'IDWork__IDService',
                 'IDAutor__Profile',
@@ -198,7 +236,12 @@ class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
         context['page'] = self.request.GET['page']
         if self.kwargs['type'] == 'Messages':
             context['messages_form'] = MessageTextForm()
-            context['messages'] = context['request_detail'].messages.select_related('IDAutor', 'IDRecipient')
+            context['messages'] = context['request_detail'].messages.select_related(
+                'IDAutor', 'IDRecipient',
+                )
+            context['messages'].filter(IDRecipient__username=self.request.user,
+                                       Status=False).update(Status=True)
+            context['user_messages_count'] = 0
         if self.kwargs['type'] == 'Logs':
             context['logs'] = Log.objects.filter(IDRequest=context['request_detail'])
         return context
@@ -214,17 +257,22 @@ class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
 @require_POST
 @login_required
 def SetStatus(request):
+    """Устанавливает статус заявки в пределенном порядке."""
     request_id = request.POST.get('id')
     request_item = get_object_or_404(Request, id=request_id)
     old_status = request_item.Status
     new_status = request.POST.get('Status')
-    if new_status == 'В_работе' and old_status == 'Новая':
+    # Перевод заявки из состояния "Новая" в состояние "В работе"
+    # Сбрасываем рейтинг и записываем исполнителя
+    if new_status == STATUS_CHOICES[1][0] and old_status == STATUS_CHOICES[0][0]:
         request_item.Rating = None
-        request_item.IDExecutor = User.objects.get(username=request.user)
-    elif ((new_status == 'В_работе' and old_status == 'На_проверке') or
-          (new_status == 'На_проверке' and old_status == 'В_работе') or
-          (new_status == 'Выполнена' and old_status == 'На_проверке')):
+        request_item.IDExecutor = request.user
+    # Определяем допустимые переходы статуса заявки. При них не делаем ничего.
+    elif ((new_status == 'in_work' and old_status == 'on_check') or
+          (new_status == 'on_check' and old_status == 'in_work') or
+          (new_status == 'completed' and old_status == 'on_check')):
         pass
+    # При остальных вариантах переходов состояний делаем редирект.
     else:
         return redirect(request.META.get('HTTP_REFERER'))
     request_item.Status = new_status
@@ -237,6 +285,7 @@ def SetStatus(request):
 
 @login_required
 def Excalation(request):
+    """Эскалируем заявку."""
     request_id = request.POST.get('id')
     request_item = get_object_or_404(Request, id=request_id)
     if request.user == request_item.IDExecutor:
@@ -244,7 +293,7 @@ def Excalation(request):
         group_item = get_object_or_404(ResponsibilityGroup, id=group_id)
         request_item.IDResponsibilityGroup = group_item
         request_item.IDExecutor = None
-        request_item.Status = 'Новая'
+        request_item.Status = 'new'
         request_item.save()
         NewLog = Log(Action=f'Заявка эскалирована {request.user} на "{group_item.Name}"',
                      IDRequest=request_item)
@@ -255,6 +304,7 @@ def Excalation(request):
 @require_POST
 @login_required
 def SendMessage(request):
+    """Отправляем сообщение в окне заявки."""
     messages_form = MessageTextForm(request.POST, request.FILES)
     if messages_form.is_valid():
         obj = messages_form.save(commit=False)
@@ -266,13 +316,33 @@ def SendMessage(request):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
-class RequestsByCategory (LoginRequiredMixin, ContextProcessor, ListView):
-    model = Service
+class RequestsByCategory(LoginRequiredMixin, ContextProcessor, ListView):
+    """
+    Выводим список предоставляемых сервисов
+    и количество неотработанных заявок по ним.
+    Количество заявок считаем при рендеринге шаблона
+    с помощью специального фильтра.
+    """
     template_name = 'UserAPP/requests_by_category.html'
     context_object_name = 'services_list'
 
+    def get_queryset(self):
+        queryset = Service.objects.annotate(
+            requests_count=Count(
+                'works__requests__id',
+                filter=Q(works__requests__Status="new") |
+                       Q(works__requests__Status="in_work")
+            )
+        )
+        return queryset
+
 
 class AllRequests(UserAPP):
+    """
+    Выводим заявки общим списком.
+    Работа этого представления не отличается от вышеописанного UserAPP,
+    поэтому наследуемся от него и переопределяем пагинацию.
+    """
     template_name = 'UserAPP/AllRequests.html'
     paginate_by = 0
 
@@ -280,6 +350,7 @@ class AllRequests(UserAPP):
 @require_POST
 @login_required
 def CleanMessages(request):
+    """Переводим все непрочитанные сообщение в состояние прочитано."""
     Message.objects.filter(IDRecipient__username=request.user,
                            Status=False).update(Status=True)
     return redirect(request.META.get('HTTP_REFERER'))
