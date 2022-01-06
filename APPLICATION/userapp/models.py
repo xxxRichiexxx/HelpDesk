@@ -67,6 +67,7 @@ class Request(Model):
         help_text='Выберите вид работ, к которому относится заявка',
         )
     DateOfCreation = DateTimeField(auto_now_add=True)
+    DateOfComplete = DateTimeField(blank=True, null=True)
     Name = CharField(
         max_length=100,
         verbose_name='Тема',

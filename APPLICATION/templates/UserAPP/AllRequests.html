@@ -145,11 +145,11 @@
                                       <h5 class="modal-title" id="exampleModalLabel">Заявка №{{request.id}}:</h5>
                                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="/user-app/set-rating/" method="POST">
-                                      <input type="hidden" name="RequestID" value="{{request.id}}">
+                                    <form action="{% url 'user-app:set-rating' %}" method="POST">
+                                      <input type="hidden" name="request_id" value="{{request.id}}">
                                       <div class="modal-body">
                                           {% csrf_token %}
-                                          {{Form|crispy}}
+                                          {{form|crispy}}
                                       </div>
                                       <div class="modal-footer">
                                         <button type="submit" class="btn btn-secondary">Сохранить</button>

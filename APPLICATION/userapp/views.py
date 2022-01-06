@@ -120,7 +120,7 @@ class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
         self.filter = self.kwargs['filter']
         if self.filter == 'lost':
             return self.requests.filter(
-                ~Q(Status='completed'),
+                Q(Status='new')|Q(Status='in_work'),
                 DateOfCreation__lt=dt.datetime.now() - F('IDWork__ReactionTime') - F('IDWork__TimeOfExecution')
             )
         else:
@@ -204,6 +204,7 @@ def SetRating(request):
         cd = Form.cleaned_data
         request_item.Rating = cd['Rating']
         request_item.Status = 'completed'
+        request_item.DateOfComplete = dt.datetime.now()
         request_item.save()
         new_log = Log(Action=f'Заявка оценена {request.user} и переведена в состояние "Выполнена"',
                       IDRequest=request_item)

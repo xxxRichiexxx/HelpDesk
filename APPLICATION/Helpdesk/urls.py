@@ -3,7 +3,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from index.views import Index
-from search.views import SearchView
 
 urlpatterns = [
     path('', Index.as_view()),    
@@ -11,6 +10,7 @@ urlpatterns = [
     path('authentication/', include('authentication.urls', namespace='authentication')),
     path('authentication/', include('django.contrib.auth.urls')),
     path('user-app/', include('userapp.urls', namespace='user-app')),
+    path('analytics/', include('analytics.urls', namespace='analytics')),
     path('admin/', admin.site.urls),    
 ]
 

@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <div class="container" style="margin-top: 10px;">
+        {# Строка с заголовком #}
         <div class="row" style="margin-top: 10px;">
           <div class="col">
             {% if scope == 'my-requests' %}
@@ -21,7 +22,9 @@
             <!-- Column -->
           </div>
         </div>
+        {# Строка с кнопками-фильтрами   #}
         <div class="row"  style="margin-top: 10px; margin-bottom: 10px">
+            {# Фильтр с новыми заявками #}
           <div class="col" style="margin-bottom:10px">            
             <a
             {% if filter == 'new' %} 
@@ -34,7 +37,7 @@
               <b>{{new_requests}}</b>
             </a> 
           </div>          
-
+            {# Фильтр с заявками в работе #}
           <div class="col" style="margin-bottom:10px">            
             <a
             {% if filter == 'in_work' %} 
@@ -47,7 +50,7 @@
               <b>{{in_work_requests}}</b>
             </a> 
           </div> 
-
+            {# Фильтр с заявками на проверке #}
           <div class="col" style="margin-bottom:10px">            
             <a
             {% if filter == 'on_check' %}
@@ -60,7 +63,7 @@
               <b>{{on_checking_requests}}</b>
             </a> 
           </div>  
-
+            {# Фильтр с просроченными заявками #}
           <div class="col" style="margin-bottom:10px">            
             <a
             {% if filter == 'lost' %}
@@ -73,7 +76,7 @@
               <b>{{alarm_requests}}</b>
             </a> 
           </div> 
-
+            {# Фильтр с выполненными заявками #}
           <div class="col" style="margin-bottom:10px">            
             <a
             {% if filter == 'completed' %} 
@@ -87,7 +90,7 @@
             </a> 
           </div> 
         </div>
-
+        {# Строка с таблицей #}
         <div class="row">
           <div class="col">
             <div class="table-responsive">

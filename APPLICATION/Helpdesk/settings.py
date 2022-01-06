@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'Filters',
     'index',
     'search',
+    'analytics',
     # General use templates & template tags (should appear first)
     # 'adminlte3',
     # Optional: Django admin theme (must be before django.contrib.admin)
@@ -124,13 +125,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'W-SU'
+# TIME_ZONE = 'W-SU'
 
-USE_I18N = True
+# USE_I18N = True
 
-USE_L10N = True
+# USE_L10N = True
 
-USE_TZ = True
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

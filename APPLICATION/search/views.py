@@ -31,3 +31,8 @@ class SearchView(LoginRequiredMixin, ContextProcessor, ListView):
                 Q(IDExecutor__last_name__icontains=search)
             )
         return result
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search'] = self.request.GET.get('search')
+        return context
