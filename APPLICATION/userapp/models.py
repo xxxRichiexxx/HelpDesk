@@ -139,7 +139,7 @@ class Message (Model):
         verbose_name='Текст сообщения',
         help_text='Введите текст сообщения',
         )
-    Data = DateTimeField(auto_now=True)
+    Date = DateTimeField(auto_now=True)
     IDAutor = ForeignKey(
         User,
         null=True,

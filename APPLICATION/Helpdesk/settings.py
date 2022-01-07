@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+from datetime import timedelta
 
 from pathlib import Path
 
@@ -45,6 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'debug_toolbar',
     'crispy_forms',
+    'rest_framework',
+    'django_filters', # функционал фильтрации данных по запросу
+    'rest_framework.authtoken',  # аутентификация по токену
+    'djoser', # аутентификация по JWT
+    'drf_yasg', # автоматическое формирование документации в формате Swagger и ReDoc
     'registration',
     'authentication',
     'userapp',
@@ -52,6 +58,7 @@ INSTALLED_APPS = [
     'index',
     'search',
     'analytics',
+    'api',
     # General use templates & template tags (should appear first)
     # 'adminlte3',
     # Optional: Django admin theme (must be before django.contrib.admin)
@@ -153,3 +160,18 @@ MEDIA_URL = '/media/'
 
 LOGIN_URL = 'authentication:login'
 LOGIN_REDIRECT_URL = '/user-app/my-requests/Новая/'
+
+REST_FRAMEWORK = {
+     'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+SIMPLE_JWT = {
+   'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+   'AUTH_HEADER_TYPES': ('Bearer',),
+}

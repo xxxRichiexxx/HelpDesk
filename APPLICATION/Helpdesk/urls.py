@@ -11,6 +11,8 @@ urlpatterns = [
     path('authentication/', include('django.contrib.auth.urls')),
     path('user-app/', include('userapp.urls', namespace='user-app')),
     path('analytics/', include('analytics.urls', namespace='analytics')),
+    path('help/', include('help.urls', namespace='help')),
+    path('api/', include('api.urls')),
     path('admin/', admin.site.urls),    
 ]
 

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="container" style="margin-top: 10px;">
+        {# Строка с данными отчета (боковое меню и таблица) #}
+        <div class="row">
+            {# Боковое меню #}
+
+            <div class="col-2"  id="list-example">
+                <div class="list-group shadow-lg">
+                  <h6 style="text-align: center; color: rgb(255, 255, 255);">Содержание:</h6>
+                  <a class="list-group-item list-group-item-action" href="#list-item-1">О программе</a>
+                  <a class="list-group-item list-group-item-action" href="#list-item-2">Используемые технологии</a>
+                  <a class="list-group-item list-group-item-action" href="#list-item-3">API</a>
+                </div>
+              </div>
+
+            {# Область с информацией #}
+            <div class="col-10" style="color: rgb(255, 255, 255);">
+                <h4 style="text-align: center">Справка к программе:</h4>
+                    <hr>
+                <h4 id="list-item-1">О программе</h4>
+                Данная программа предназначена для подачи заявок в службу поддержки или любую другую службу, оказывающую сервис.
+                    <hr>
+                <h4 id="list-item-2">Используемые технологии:</h4>
+                <img src="{% static 'Python.svg' %}" alt="Фото">
+                <img src="{% static 'Django.png' %}" alt="Фото" width="170" height="111">
+                <img src="{% static 'DRF.png' %}" alt="Фото">
+                <img src="{% static 'BS.png' %}" alt="Фото" width="150" height="111">
+                    <hr>
+                <h4 id="list-item-3">API:</h4>
+                Документация к API в формате:
+                <a href="/api/redoc">Redoc</a>
+                <br>
+                Документация к API в формате:
+                <a href="/api/swagger">Swagger</a>
+
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

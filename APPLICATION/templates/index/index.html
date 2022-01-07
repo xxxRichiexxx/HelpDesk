@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <div class="container-fluid" style="background-color: black;">
+    <div class="container-fluid">
         <div class="row">
-            {% comment %} <h1 style="margin: 30px"> Здравствуйте, {{ user.first_name }}!</h1> {% endcomment %}
-            <img src="{% static 'ruki-liudi-fon.jpg' %}" alt="Фото" style="height:800px;">
+            <h1 style="margin: 30px; color: white;"> Здравствуйте, {{ user.first_name }}!</h1>
+            <h2 style="margin-left: 30px; color: darkgrey;"> Добро пожаловать в программу HelpDesk!</h2>
+            <img src="{% static 'hands-clip-art-87.png' %}" alt="Фото" style="height: 400px;">
         </div>
-        <div class="row">
-            {{x}}
+        <div class="row" style="margin: 30px;ali">
+
+{#            Данная программа разработана для подачи заявок в службу поддержки или любую другую службу, оказывающую услугию#}
+
         </div>
     </div>
 {% endblock %} 
