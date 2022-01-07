@@ -238,11 +238,10 @@ class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
         if self.kwargs['type'] == 'Messages':
             context['messages_form'] = MessageTextForm()
             context['messages'] = context['request_detail'].messages.select_related(
-                'IDAutor', 'IDRecipient',
-                )
-            context['messages'].filter(IDRecipient__username=self.request.user,
+                'IDAutor', 'IDRecipient',)
+            readed_messages = context['messages'].filter(IDRecipient__username=self.request.user,
                                        Status=False).update(Status=True)
-            context['user_messages_count'] = 0
+            context['user_messages_count'] -= readed_messages
         if self.kwargs['type'] == 'Logs':
             context['logs'] = Log.objects.filter(IDRequest=context['request_detail'])
         return context
