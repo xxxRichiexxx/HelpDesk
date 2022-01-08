@@ -6,18 +6,19 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf.urls import url
 
-from .views import RequestViewSet, MessageViewSet
+from .views import RequestViewSet, MessageViewSet, ServiceViewSet
 
-router = SimpleRouter()
-router.register('requests', RequestViewSet)
-router.register(r'requests/(?P<request_id>\d+)/messages', MessageViewSet, basename='message')
+router_v1 = SimpleRouter()
+router_v1.register('requests', RequestViewSet)
+router_v1.register(r'requests/(?P<request_id>\d+)/messages', MessageViewSet, basename='message')
+router_v1.register('services', ServiceViewSet)
 
 urlpatterns = [
-    path('v1/', include(router.urls)),
-    path('v1/auth/', include('djoser.urls')),
-    path('v1/auth/', include('djoser.urls.jwt')),
-    path('v1/auth/', include('rest_framework.urls')),
-    path('v1/auth/api-token-auth/', views.obtain_auth_token),
+    path('v1/', include(router_v1.urls)),
+    path('v1/auth/', include('djoser.urls')),  # аутентификация jwt. работа с пользователями
+    path('v1/auth/', include('djoser.urls.jwt')),  # аутентификация jwt. работа с токенами
+    path('v1/auth/', include('rest_framework.urls')),  # ссылки на логин/логаут при работе с api через web.
+    path('v1/auth/api-token-auth/', views.obtain_auth_token),  # аутентификация токеном.
 ]
 
 # Настраиваем автоматическую документацию для API

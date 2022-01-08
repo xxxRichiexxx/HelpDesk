@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from userapp.models import Request, Message
+from userapp.models import Request, Message, Service
 
 
 class RequestViewOrCreateSerializer(serializers.ModelSerializer):
@@ -48,3 +48,10 @@ class MessageChangeSerializer(serializers.ModelSerializer):
             'IDAutor',
             'IDRequest'
         ]
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Service
+        fields = '__all__'

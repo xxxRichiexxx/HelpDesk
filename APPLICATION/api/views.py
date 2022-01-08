@@ -5,11 +5,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.shortcuts import get_object_or_404
 
-from userapp.models import Request, ResponsibilityGroup, Message
+from userapp.models import Request, ResponsibilityGroup, Message, Service
 from .serializers import (RequestViewOrCreateSerializer,
                           RequestChangeSerializer,
                           MessageViewOrCreateSerializer,
-                          MessageChangeSerializer)
+                          MessageChangeSerializer,
+                          ServiceSerializer)
 from .permissions import AuthorPermission
 
 
@@ -75,3 +76,13 @@ class MessageViewSet(viewsets.ModelViewSet):
         if self.request.method in ('PATCH', 'PUT'):
             return MessageChangeSerializer
         return MessageViewOrCreateSerializer
+
+
+class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Реализует следующий функционал:
+    1) Список сервисов - доступно аутентифицированным
+    2) Детализацию по конкретному сервису - доступно аутентифицированным
+    """
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
