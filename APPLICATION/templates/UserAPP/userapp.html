@@ -14,6 +14,8 @@
               <h4 style="color: rgb(255, 255, 255);">Заявки группы:</h4>
             {% elif scope == 'requests-by-category' %}
               <h4 style="color: rgb(255, 255, 255);">{{service_name}}:</h4>
+            {% elif scope == 'i-executor' %}
+              <h4 style="color: rgb(255, 255, 255);">Я исполнитель:</h4>
             {% else %}
               <h4 style="color: rgb(255, 255, 255);">Мои заявки:</h4>
             {% endif %}                  
@@ -94,7 +96,7 @@
         <div class="row">
           <div class="col">
             <div class="table-responsive">
-              <table class="table table-hover table-bordered table-sm custom-shadow " style="background-color: rgb(255, 253, 253);">
+              <table class="table table-hover table-striped table-bordered table-sm custom-shadow " style="background-color: rgb(255, 253, 253); text-align: center;">
                 <thead >      
                   <tr valign="middle">
                     <td width="10%" class="table-light" style="background: #313131; color: rgb(253, 253, 253); text-align: center;">№</th>
@@ -109,15 +111,17 @@
                 </thead>
                 <tbody>
                   {% for request in requests %}
-                  <tr>          
-                    <td style="text-align: center;">
+                  <tr style="vertical-align: middle;">
+                    <td>
                       {{ request.id }}
                     </td> 
                     <td>
                       {{ request.DateOfCreation|date:"d.m.Y f" }}
                     </td>
-                    <td>
-                      {{ request.Name }}
+                    <td >
+                        <b>{{ request.IDWork.IDService.Name }}.    {{ request.IDWork.Name }}</b>
+                        <hr>
+                        {{ request.Name }}
                     </td>
                     <td>
                       {{ request.IDAutor.get_full_name }}

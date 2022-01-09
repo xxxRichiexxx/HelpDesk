@@ -80,35 +80,25 @@ class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
         Переопределяем анный метод,
         чтобы получить заявки, относящиеся к заданной области видимости
         """
-        if self.kwargs['scope'] == 'group-requests':
-            self.requests = Request.objects.select_related(
+        basic_query = Request.objects.select_related(
                 'IDWork',
-                'IDAutor',
-                'IDExecutor',
-                'IDResponsibilityGroup',
-                ).filter(
-                    IDResponsibilityGroup__profile__User=self.request.user)
-        elif self.kwargs['scope'] == 'requests-by-category':
-            self.requests = Request.objects.select_related(
-                'IDWork',
-                'IDAutor',
-                'IDExecutor',
-                'IDResponsibilityGroup',
-                ).filter(IDWork__IDService=self.request.GET['id_service'])
-        elif self.kwargs['scope'] == 'all-requests':
-            self.requests = Request.objects.select_related(
                 'IDWork__IDService',
                 'IDAutor',
                 'IDExecutor',
                 'IDResponsibilityGroup',
-                ).order_by("IDWork__IDService__Name")
+                )
+        if self.kwargs['scope'] == 'group-requests':
+            self.requests = basic_query.filter(
+                IDResponsibilityGroup__profile__User=self.request.user)
+        elif self.kwargs['scope'] == 'requests-by-category':
+            self.requests = basic_query.filter(
+                IDWork__IDService=self.request.GET['id_service'])
+        elif self.kwargs['scope'] == 'all-requests':
+            self.requests = basic_query.order_by("IDWork__IDService__Name")
+        elif self.kwargs['scope'] == 'i-executor':
+            self.requests = basic_query.filter(IDExecutor=self.request.user)
         else:
-            self.requests = Request.objects.select_related(
-                'IDWork',
-                'IDAutor',
-                'IDExecutor',
-                'IDResponsibilityGroup',
-                ).filter(IDAutor=self.request.user)
+            self.requests = basic_query.filter(IDAutor=self.request.user)
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):

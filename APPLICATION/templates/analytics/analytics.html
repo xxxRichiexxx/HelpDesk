@@ -87,8 +87,12 @@
                     <tbody>
                       {% for user in requests_per_users %}
                       <tr>
-                        <td >
-                          {{ user.fullname }}
+                        <td>
+                            {% if user.fullname == ' ' %}
+                                Без исполнителя
+                            {% else %}
+                                {{ user.fullname }}
+                            {% endif %}
                         </td>
                         <td>
                           {{ user.in_work_requests }}
@@ -98,13 +102,13 @@
                         </td>
                           <td>
                             {{ user.lost_requests }}
-                        </td>
+                          </td>
                         <td>
-                          {{ user.completed_requests }}
+                            {{ user.completed_requests }}
                         </td>
                           <td>
-                          {{ user.requests_count }}
-                        </td>
+                            {{ user.requests_count }}
+                          </td>
                       </tr>
 
                       {% endfor %}
@@ -113,10 +117,14 @@
                               Всего:
                           </td>
                           <td>
-                              {{ requests.in_work}}
+                              {{ requests.in_work }}
                           </td>
                           <td>
-                              {{ requests.on_check }}
+                              {% if requests.on_check %}
+                                {{ requests.on_check }}
+                              {% else %}
+                                0
+                              {% endif %}
                           </td>
                           <td>
                               {{ lost_requests }}
