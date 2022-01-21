@@ -13,7 +13,7 @@
               ["Новые", {{ requests.new }}, "color: #e5e4e2"],
               ["В работе", {{ requests.in_work }}, "color: #17BE04"],
               ["На проверке", {{ requests.on_check }}, "gold"],
-              ["Просрочено", {{ lost_requests }}, "red"],
+              ["Просрочено", {{ requests.lost_requests }}, "red"],
               ["Выполнено", {{ requests.completed }}, "blue"]
           ]);
 
@@ -49,7 +49,7 @@
         {# Строка с данными отчета (боковое меню и таблица) #}
         <div class="row">
             {# Боковое меню #}
-            <aside class="col-12 col-md-3" style="margin-top: 135px">
+            <aside class="col-12 col-md-3" style="margin-top: 35px">
               <ul class="list-group list-group-flush shadow-lg">
                   <li class="list-group-item">
                       Выберите месяц:
@@ -65,7 +65,11 @@
             {# Область с информацией #}
             <article class="col-12 col-md-9" style="text-align: center;">
                 <h4 style="color: rgb(255, 255, 255);">Отчет за {{current_month}}:</h4>
-                <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Всего заявок: {{ all_requests_count }}</h6></span>
+                <div style="background: white; padding: 10px">
+                    <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Всего заявок: {{ all_requests_count }}</h6></span>
+                    <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Среднее время <br> выполнения: {{ average_execution_time }} мин.</h6></span>
+                    <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Доля просроченных заявок: {{ lost_requests_percent }} %</h6></span>
+                </div>
                 {# График #}
                 <div id="chart_wrap">
                     <div id="columnchart_values">
@@ -127,7 +131,7 @@
                               {% endif %}
                           </td>
                           <td>
-                              {{ lost_requests }}
+                              {{ requests.lost_requests }}
                           </td>
                           <td>
                               {{ requests.completed }}

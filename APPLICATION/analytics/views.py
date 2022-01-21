@@ -1,7 +1,7 @@
 from django.utils import timezone
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q, Count, F
+from django.db.models import Q, Count, F, Avg
 from django.contrib.auth import get_user_model
 from django.db.models.functions import TruncMonth
 from django.db.models.functions import Concat
@@ -61,12 +61,8 @@ class Analytics(LoginRequiredMixin, ContextProcessor, TemplateView):
         context['requests'] = dict(Request.objects.filter(
             DateOfCreation__month=context['current_month']
             ).values_list('Status').annotate(count=Count('Status')).order_by())
-        # Общее количество заявок за выбранный месяц
-        context['all_requests_count'] = Request.objects.filter(
-            DateOfCreation__month=context['current_month']
-            ).values('Status').count()
         # Количество просроченных заявок
-        context['lost_requests'] = Request.objects.filter(
+        lost_requests = Request.objects.filter(
             DateOfCreation__month=context['current_month']
             ).filter(
                 Q(DateOfCreation__lt=timezone.now() - F('IDWork__ReactionTime') - F('IDWork__TimeOfExecution'),
@@ -74,4 +70,17 @@ class Analytics(LoginRequiredMixin, ContextProcessor, TemplateView):
                 Q(DateOfCreation__lt=F('DateOfComplete') - F('IDWork__ReactionTime') - F('IDWork__TimeOfExecution'),
                     Status='completed')
                 ).count()
+        context['requests']['lost_requests'] = lost_requests
+        # Общее количество заявок за выбранный месяц
+        context['all_requests_count'] = Request.objects.filter(
+            DateOfCreation__month=context['current_month']
+            ).values('Status').count()
+        # Среднее время выполнения заявки
+        context['average_execution_time'] = round(
+            Request.objects.filter(Status='completed').annotate(
+                execution_time=F('DateOfComplete') - F('DateOfCreation')
+            ).aggregate(Avg('execution_time'))['execution_time__avg'].total_seconds()/60,
+            0)
+        # Доля просроченных заявок
+        context['lost_requests_percent'] = round(lost_requests/context['all_requests_count']*100, 0)
         return context

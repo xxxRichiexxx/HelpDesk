@@ -23,37 +23,35 @@ class RegistrationForm (forms.Form):
                           widget=forms.PasswordInput(),
                           label="Повторите пароль")
 
-    def NameSurnameValidation(self, error_text, cd):
-        if re.findall(r'\W', cd):
+    def name_surname_validation(self, error_text, cd):
+        if re.findall(r'\W', cd)\
+                or re.findall(r'\d', cd)\
+                or re.findall(r'[a-z]', cd):
             raise forms.ValidationError(error_text)  # проверка на спецсимволы
-        elif re.findall(r'\d', cd):
-            raise forms.ValidationError(error_text)  # проверка на цифры
-        elif re.findall(r'[QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm]', cd):
-            raise forms.ValidationError(error_text)  # проверка на латиницу
         return cd
 
     def clean_Name(self):
         cd = self.cleaned_data['Name']
         error_text = 'Имя должно содержать только кирелические символы'
-        return self.NameSurnameValidation(error_text, cd)
+        return self.name_surname_validation(error_text, cd)
 
     def clean_Surname(self):
         cd = self.cleaned_data['Surname']
         error_text = 'Фамилия должна содержать только кирелические символы'
-        return self.NameSurnameValidation(error_text, cd)
+        return self.name_surname_validation(error_text, cd)
 
-    def PasswordValidation(self, cd):
+    def password_validation(self, cd):
         if len(cd) < 8:
             raise forms.ValidationError('Пароль должен быть более 8 символов')
-        elif re.findall(r'[йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ]', cd):
+        elif re.findall(r'[а-я]', cd):
             raise forms.ValidationError(
                 'Пароль должен содержать только латиницу')
-        elif re.findall(r'\W', cd) == []:
+        elif not re.findall(r'\W', cd):
             raise forms.ValidationError(
                 'Пароль должен содержать специальные символы')
-        elif re.findall(r'\d', cd) == []:
+        elif not re.findall(r'\d', cd):
             raise forms.ValidationError('Пароль должен содержать цифры')
-        elif re.findall(r'[qwertyuiopasdfghjklzxcvbnm]', cd) == []:
+        elif not re.findall(r'[a-z]', cd):
             raise forms.ValidationError(
                 'Пароль должен содержать латинские буквы')
         return cd
@@ -68,11 +66,11 @@ class RegistrationForm (forms.Form):
 
     def clean_Password1(self):
         cd = self.cleaned_data['Password1']
-        return self.PasswordValidation(cd)
+        return self.password_validation(cd)
 
     def clean_Password2(self):
         cd = self.cleaned_data['Password2']
-        return self.PasswordValidation(cd)
+        return self.password_validation(cd)
 
     def clean(self):
         cd = self.cleaned_data
