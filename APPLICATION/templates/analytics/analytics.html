@@ -56,7 +56,7 @@
                   </li>
                   {% for month in months %}
                   <li class="list-group-item">
-                    <a href="/analytics/?month={{month.month|date:"m"}}" class="btn btn-secondary" tabindex="-1" role="button" aria-disabled="true">{{month.month|date:"Y-M"}}</a>
+                    <a href="/analytics/?month={{month.month|date:"Y-m"}}" class="btn btn-secondary" tabindex="-1" role="button" aria-disabled="true">{{month.month|date:"Y-M"}}</a>
                     Заявок: <span class="badge bg-secondary"> {{month.count}} </span>
                   </li>
                   {% endfor %}
@@ -64,11 +64,11 @@
             </aside>
             {# Область с информацией #}
             <article class="col-12 col-md-9" style="text-align: center;">
-                <h4 style="color: rgb(255, 255, 255);">Отчет за {{current_month}}:</h4>
+                <h4 style="color: rgb(255, 255, 255);">Отчет за {{current_month|date:"Y-M"}}:</h4>
                 <div style="background: white; padding: 10px">
-                    <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Всего заявок: {{ all_requests_count }}</h6></span>
+                    <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Всего заявок: <br> {{ all_requests_count }}</h6></span>
                     <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Среднее время <br> выполнения: {{ average_execution_time }} мин.</h6></span>
-                    <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Доля просроченных заявок: {{ lost_requests_percent }} %</h6></span>
+                    <span class="badge bg-secondary" style="margin-bottom: 30px; padding: 20px"><h6>Доля просроченных заявок: <br> {{ lost_requests_percent }} %</h6></span>
                 </div>
                 {# График #}
                 <div id="chart_wrap">
