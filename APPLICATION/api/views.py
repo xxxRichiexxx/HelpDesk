@@ -6,12 +6,14 @@ from rest_framework import filters
 from django.shortcuts import get_object_or_404
 
 from userapp.models import Request, ResponsibilityGroup, Message, Service
-from .serializers import (RequestViewOrCreateSerializer,
+from .serializers import (RequestViewSerializer,
+                          RequestCreateSerializer,
                           RequestChangeSerializer,
                           MessageViewOrCreateSerializer,
                           MessageChangeSerializer,
                           ServiceSerializer)
 from .permissions import AuthorPermission
+from .filters import RequestFilter
 
 
 class RequestViewSet(viewsets.ModelViewSet):
@@ -27,7 +29,7 @@ class RequestViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly, AuthorPermission,)
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filterset_fields = '__all__'
+    filter_class = RequestFilter
     search_fields = ('Сomment', 'Name', )
 
     def perform_create(self, serializer):
@@ -38,9 +40,11 @@ class RequestViewSet(viewsets.ModelViewSet):
         )
 
     def get_serializer_class(self):
-        if self.request.method in ('PATCH', 'PUT'):
+        if self.action in ('update', 'partial_update'):
             return RequestChangeSerializer
-        return RequestViewOrCreateSerializer
+        elif self.action == 'create':
+            return RequestCreateSerializer
+        return RequestViewSerializer
 
 
 class MessageViewSet(viewsets.ModelViewSet):
