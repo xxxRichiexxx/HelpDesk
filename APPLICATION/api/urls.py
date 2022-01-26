@@ -6,12 +6,14 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf.urls import url
 
-from .views import RequestViewSet, MessageViewSet, ServiceViewSet
+from .views import RequestViewSet, MessageViewSet, ServiceViewSet, SetRatingViewSet
 
 router_v1 = SimpleRouter()
 router_v1.register('requests', RequestViewSet)
 router_v1.register(r'requests/(?P<request_id>\d+)/messages', MessageViewSet, basename='message')
 router_v1.register('services', ServiceViewSet)
+router_v1.register('requests/set-rating', SetRatingViewSet)
+
 
 urlpatterns = [
     path('v1/', include(router_v1.urls)),

@@ -54,21 +54,29 @@ class RequestViewSerializer(serializers.ModelSerializer):
         ]
 
 
-class RequestCreateSerializer(serializers.ModelSerializer):
+class RequestCreateOrChangeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
         fields = ('Name', 'Сomment', 'IDWork')
 
 
-class RequestChangeSerializer(serializers.ModelSerializer):
+class RequestUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = '__all__'
-        read_only_fields = [
+        exclude = [
             'IDAutor',
+            'Rating',
+            'DateOfCreation',
         ]
+
+
+class RequestSetRatingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Request
+        fields = ('Rating',)
 
 
 class MessageViewOrCreateSerializer(serializers.ModelSerializer):

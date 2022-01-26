@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.pagination import LimitOffsetPagination
 from django_filters.rest_framework import DjangoFilterBackend
@@ -7,12 +7,13 @@ from django.shortcuts import get_object_or_404
 
 from userapp.models import Request, ResponsibilityGroup, Message, Service
 from .serializers import (RequestViewSerializer,
-                          RequestCreateSerializer,
-                          RequestChangeSerializer,
+                          RequestCreateOrChangeSerializer,
+                          RequestUpdateSerializer,
                           MessageViewOrCreateSerializer,
                           MessageChangeSerializer,
-                          ServiceSerializer)
-from .permissions import AuthorPermission
+                          ServiceSerializer,
+                          RequestSetRatingSerializer)
+from .permissions import AuthorPermission, SetRatingPermission
 from .filters import RequestFilter
 
 
@@ -40,11 +41,17 @@ class RequestViewSet(viewsets.ModelViewSet):
         )
 
     def get_serializer_class(self):
-        if self.action in ('update', 'partial_update'):
-            return RequestChangeSerializer
-        elif self.action == 'create':
-            return RequestCreateSerializer
+        if self.action == 'partial_update':
+            return RequestUpdateSerializer
+        elif self.action in ('create', 'update'):
+            return RequestCreateOrChangeSerializer
         return RequestViewSerializer
+
+
+class SetRatingViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = Request.objects.all()
+    serializer_class = RequestSetRatingSerializer
+    permission_classes = (SetRatingPermission,)
 
 
 class MessageViewSet(viewsets.ModelViewSet):
