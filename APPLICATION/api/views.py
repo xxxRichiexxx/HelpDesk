@@ -23,15 +23,25 @@ class RequestViewSet(viewsets.ModelViewSet):
     1) Список заявок(обращений) - доступно всем
     2) Детализацию по выбранной заявке - доступно всем
     3) Создание заявки - доступно аутентифицированным
-    4) Редактирование заявки - доступно автору
-    5) Удаление заявки - доступно автору
+    4) Редактирование заявки - доступно автору или сотруднику service desk
+    6) Удаление заявки - доступно автору или сотруднику service desk
+    7) Пагинация вида api/v1/requests/?limit=3&offset=5
+    8) Фильтрация вида api/v1/requests/?IDAutor__username=andrey&Status=new
+    9) Поиск вида api/v1/requests/?search=тест
     """
     queryset = Request.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly, AuthorPermission,)
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filter_class = RequestFilter
-    search_fields = ('Сomment', 'Name', )
+    search_fields = (
+        'IDWork__Name', 'IDWork__IDService__Name',
+        'DateOfCreation',
+        'Name', 'Сomment',
+        'IDAutor__first_name', 'IDAutor__last_name',
+        'IDExecutor__first_name', 'IDExecutor__last_name',
+        'IDResponsibilityGroup__Name',
+    )
 
     def perform_create(self, serializer):
         id_responsibility_group = ResponsibilityGroup.objects.get(Default=True)
@@ -49,6 +59,9 @@ class RequestViewSet(viewsets.ModelViewSet):
 
 
 class SetRatingViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    """
+    Данное представление позволяет авторам оценивать работу по заявке.
+    """
     queryset = Request.objects.all()
     serializer_class = RequestSetRatingSerializer
     permission_classes = (SetRatingPermission,)
