@@ -5,7 +5,7 @@ class AuthorPermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (request.method in SAFE_METHODS or
-                request.user == obj.IDAutor or
+                request.user == obj.IDAuthor or
                 request.user.Profile.IDResponsibilityGroup
                 )
 
@@ -13,4 +13,4 @@ class AuthorPermission(BasePermission):
 class SetRatingPermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
-        return request.user == obj.IDAutor
+        return request.user == obj.IDAuthor

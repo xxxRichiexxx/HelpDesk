@@ -3,14 +3,9 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-            <h1 style="margin: 30px; color: white;"> Здравствуйте, {{ user.first_name }}!</h1>
-            <h2 style="margin-left: 30px; color: darkgrey;"> Добро пожаловать в программу HelpDesk!</h2>
-            <img src="{% static 'hands.png' %}" alt="Фото" style="height: 400px;">
-        </div>
-        <div class="row" style="margin: 30px;ali">
-
-{#            Данная программа разработана для подачи заявок в службу поддержки или любую другую службу, оказывающую услугию#}
-
+            <h1 style="color: white; position: fixed;left:15px; top: 100px;"> Здравствуйте, {{ user.first_name }}!</h1>
+            <h2 style="color: darkgrey; position: fixed;left:15px; top: 150px;"> Добро пожаловать в программу HelpDesk!</h2>
+            <img src="{% static 'hands.png' %}" alt="Фото" style="width: 98%; margin-left: 10px">
         </div>
     </div>
 {% endblock %} 

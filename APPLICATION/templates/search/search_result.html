@@ -33,7 +33,7 @@
                       {{ request.Name }}
                     </td>
                     <td>
-                      {{ request.IDAutor.get_full_name }}
+                      {{ request.IDAuthor.get_full_name }}
                     </td>
                     <td>
                       {% if request.IDExecutor != None %}
@@ -44,7 +44,7 @@
                       {{ request.IDResponsibilityGroup.Name }}
                     </td>
                     <td style="text-align: center;">
-                      {% if request.Status == 'on_check' and request.IDAutor == user %}
+                      {% if request.Status == 'on_check' and request.IDAuthor == user %}
                       <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#Modal{{request.id}}"> ? </button>
                       {% elif request.Rating == None %}
                         ---

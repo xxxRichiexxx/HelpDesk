@@ -25,9 +25,9 @@ class SearchView(LoginRequiredMixin, ContextProcessor, ListView):
                 Q(id__icontains=search) |
                 Q(IDWork__Name__icontains=search) |
                 Q(IDWork__IDService__Name__icontains=search) |
-                Q(Сomment__icontains=search) |
+                Q(Comment__icontains=search) |
                 Q(Name__icontains=search) |
-                Q(IDAutor__last_name__icontains=search) |
+                Q(IDAuthor__last_name__icontains=search) |
                 Q(IDExecutor__last_name__icontains=search)
             )
         return result

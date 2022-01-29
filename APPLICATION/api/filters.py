@@ -11,7 +11,7 @@ class RequestFilter(django_filters.FilterSet):
 
     class Meta:
         model = Request
-        fields = ['IDAutor__username', 'Status', 'IDResponsibilityGroup']
+        fields = ['IDAuthor__username', 'Status', 'IDResponsibilityGroup']
 
     def my_custom_filter(self, queryset, name, value):
         if value == 'lost':
@@ -24,4 +24,3 @@ class RequestFilter(django_filters.FilterSet):
         return queryset.filter(**{
             name: value,
         })
-

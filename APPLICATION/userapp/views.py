@@ -31,7 +31,7 @@ class ContextProcessor(ContextMixin):
         user = self.request.user
         # сохраняем в контекст непрочитанные сообщения пользователя
         context['user_messages'] = Message.objects.select_related(
-            'IDAutor',
+            'IDAuthor',
             'IDRequest',
         ).filter(IDRecipient=user, Status=False)
         # сохраняем в контекст количество непрочитанных сообщений пользователя
@@ -39,7 +39,7 @@ class ContextProcessor(ContextMixin):
         # сохраняем в контекст количество незавершенных заявок пользователя
         context['user_requests'] = Request.objects.filter(
             ~Q(Status='completed'),
-            IDAutor=user,
+            IDAuthor=user,
         ).count()
         # сохраняем в контекст булево значение группы ответственности
         # пользователя
@@ -84,7 +84,7 @@ class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
         basic_query = Request.objects.select_related(
             'IDWork',
             'IDWork__IDService',
-            'IDAutor',
+            'IDAuthor',
             'IDExecutor',
             'IDResponsibilityGroup',
         )
@@ -99,7 +99,7 @@ class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
         elif self.kwargs['scope'] == 'i-executor':
             self.requests = basic_query.filter(IDExecutor=self.request.user)
         else:
-            self.requests = basic_query.filter(IDAutor=self.request.user)
+            self.requests = basic_query.filter(IDAuthor=self.request.user)
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -174,12 +174,12 @@ class CreateRequest2(LoginRequiredMixin, ContextProcessor, FormView):
     def form_valid(self, form):
         cd = form.cleaned_data
         id_work = Work.objects.get(id=cd['InputWork'])
-        autor = User.objects.get(username=self.request.user)
+        author = User.objects.get(username=self.request.user)
         id_responsibility_group = ResponsibilityGroup.objects.get(Default=True)
         new_request = Request(IDWork=id_work,
                               Name=cd['Name'],
-                              Сomment=cd['Сomment'],
-                              IDAutor=autor,
+                              Comment=cd['Comment'],
+                              IDAuthor=author,
                               IDResponsibilityGroup=id_responsibility_group)
         new_request.save()
         new_log = Log(Action='Создана заявка', IDRequest=new_request)
@@ -194,7 +194,7 @@ def set_rating(request):
     request_id = request.POST.get('request_id')
     request_item = get_object_or_404(Request, id=request_id)
     form = RatingForm(request.POST)
-    if request.user == request_item.IDAutor and form.is_valid():
+    if request.user == request_item.IDAuthor and form.is_valid():
         cd = form.cleaned_data
         request_item.Rating = cd['Rating']
         request_item.Status = 'completed'
@@ -214,7 +214,7 @@ class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
     """
     queryset = Request.objects.select_related(
         'IDWork__IDService',
-        'IDAutor__Profile',
+        'IDAuthor__Profile',
         'IDExecutor__Profile',
         'IDResponsibilityGroup',
     )
@@ -229,12 +229,15 @@ class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
         if self.kwargs['type'] == 'Messages':
             context['messages_form'] = MessageTextForm()
             context['messages'] = context['request_detail'].messages.select_related(
-                'IDAutor', 'IDRecipient', )
+                'IDAuthor', 'IDRecipient', )
             readed_messages = context['messages'].filter(IDRecipient__username=self.request.user,
                                                          Status=False).update(Status=True)
             context['user_messages_count'] -= readed_messages
         if self.kwargs['type'] == 'Logs':
             context['logs'] = Log.objects.filter(IDRequest=context['request_detail'])
+        for item in STATUS_CHOICES:
+            if item[0] == context['request_detail'].Status:
+                context['status'] = item[1]
         return context
 
     def get_template_names(self):
@@ -255,13 +258,20 @@ def set_status(request):
     new_status = request.POST.get('Status')
     # Перевод заявки из состояния "Новая" в состояние "В работе"
     # Сбрасываем рейтинг и записываем исполнителя
-    if new_status == STATUS_CHOICES[1][0] and old_status == STATUS_CHOICES[0][0]:
+    if (new_status == STATUS_CHOICES[1][0] and
+            old_status == STATUS_CHOICES[0][0] and
+            request.user.Profile.IDResponsibilityGroup):
         request_item.Rating = None
         request_item.IDExecutor = request.user
     # Определяем допустимые переходы статуса заявки. При них не делаем ничего.
-    elif ((new_status == 'in_work' and old_status == 'on_check') or
-          (new_status == 'on_check' and old_status == 'in_work') or
-          (new_status == 'completed' and old_status == 'on_check')):
+    elif ((new_status == STATUS_CHOICES[1][0] and
+           old_status == STATUS_CHOICES[2][0] and
+           request.user == request_item.IDAuthor) or
+          (new_status == STATUS_CHOICES[2][0] and
+           old_status == STATUS_CHOICES[1][0] and
+           request.user.Profile.IDResponsibilityGroup) or
+          (new_status == STATUS_CHOICES[3][0] and
+           old_status == STATUS_CHOICES[2][0])):
         pass
     # При остальных вариантах переходов состояний делаем редирект.
     else:
@@ -303,7 +313,7 @@ def send_message(request):
         author = request.user
         id = request.GET['id']
         obj.IDRequest = Request.objects.get(id=id)
-        obj.IDAutor = author
+        obj.IDAuthor = author
         obj.save()
     return redirect(request.META.get('HTTP_REFERER'))
 

@@ -23,7 +23,8 @@ class RegistrationForm (forms.Form):
                           widget=forms.PasswordInput(),
                           label="Повторите пароль")
 
-    def name_surname_validation(self, error_text, cd):
+    @staticmethod
+    def name_surname_validation(error_text, cd):
         if re.findall(r'\W', cd)\
                 or re.findall(r'\d', cd)\
                 or re.findall(r'[a-z]', cd):
@@ -40,7 +41,8 @@ class RegistrationForm (forms.Form):
         error_text = 'Фамилия должна содержать только кирелические символы'
         return self.name_surname_validation(error_text, cd)
 
-    def password_validation(self, cd):
+    @staticmethod
+    def password_validation(cd):
         if len(cd) < 8:
             raise forms.ValidationError('Пароль должен быть более 8 символов')
         elif re.findall(r'[а-я]', cd):

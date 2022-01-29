@@ -5,7 +5,5 @@ from .views import Analytics
 app_name = 'analytics'
 
 urlpatterns = [
-    path('',
-         Analytics.as_view(),
-         name='all'),
- ]
+    path('', Analytics.as_view(), name='all'),
+]

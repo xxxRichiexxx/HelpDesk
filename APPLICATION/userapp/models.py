@@ -1,3 +1,6 @@
+"""
+В данном проекте принято CamelCase именование полей модели.
+"""
 from django.contrib.auth.models import User
 from django.db.models import (CharField, ImageField, ForeignKey,
                               IntegerField, DurationField, DateTimeField,
@@ -46,7 +49,7 @@ class Work(Model):
     Type = CharField(max_length=30,
                      choices=TYPE_CHOICES,
                      verbose_name="Тип")
-    Сomplexity = IntegerField(verbose_name="Сложность")
+    Complexity = IntegerField(verbose_name="Сложность")
     ReactionTime = DurationField(verbose_name="Время реакции,ч")
     TimeOfExecution = DurationField(verbose_name="Время выполненияб,ч")
 
@@ -73,14 +76,14 @@ class Request(Model):
         verbose_name='Тема',
         help_text='Введите тему заявки, описывающую суть проблемы/запроса',
         )
-    Сomment = CharField(
+    Comment = CharField(
         max_length=1000,
         verbose_name='Содержание заявки',
         help_text='Введите детальное описание проблемы',
         )
-    IDAutor = ForeignKey(
+    IDAuthor = ForeignKey(
         User,
-        related_name='autor_requests',
+        related_name='author_requests',
         on_delete=CASCADE,
         verbose_name='Автор',
         help_text='Выберите автора заявки',
@@ -116,7 +119,7 @@ class Request(Model):
         )
 
     def __str__(self):
-        return f'{self.IDAutor}: {self.Name}'
+        return f'{self.IDAuthor}: {self.Name}'
 
     class Meta:
         ordering = ["-DateOfCreation"]
@@ -140,12 +143,12 @@ class Message (Model):
         help_text='Введите текст сообщения',
         )
     Date = DateTimeField(auto_now=True)
-    IDAutor = ForeignKey(
+    IDAuthor = ForeignKey(
         User,
         null=True,
         blank=True,
         on_delete=CASCADE,
-        related_name='autor_messages',
+        related_name='author_messages',
         verbose_name='Автор',
         help_text='Выберите автора сообщения',
         )

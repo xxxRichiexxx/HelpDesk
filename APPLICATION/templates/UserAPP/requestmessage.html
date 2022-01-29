@@ -25,7 +25,7 @@
               {% for message in messages %}
               
               <div class="alert alert-primary" role="alert" style ="margin-top: 20px;">
-                <b>{{message.IDAutor.last_name}} {{message.IDAutor.first_name}}</b> {{message.Data|date:"d.m.Y f"}}                
+                <b>{{message.IDAuthor.last_name}} {{message.IDAuthor.first_name}}</b> {{message.Data|date:"d.m.Y f"}}
                 {% if message.IDRecipient %}
                   <b style="color: brown;">To @{{message.IDRecipient.last_name}} {{message.IDRecipient.first_name}}</b>
                 {% endif %}

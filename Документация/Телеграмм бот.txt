@@ -1,3 +1,0 @@
-Use this token to access the HTTP API:
-
-5085481354:AAE0ywzAid1jCjDbTfMF91O8ugMJ0d-UrmU

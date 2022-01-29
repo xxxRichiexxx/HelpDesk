@@ -26,7 +26,7 @@ class RequestViewSet(viewsets.ModelViewSet):
     4) Редактирование заявки - доступно автору или сотруднику service desk
     6) Удаление заявки - доступно автору или сотруднику service desk
     7) Пагинация вида api/v1/requests/?limit=3&offset=5
-    8) Фильтрация вида api/v1/requests/?IDAutor__username=andrey&Status=new
+    8) Фильтрация вида api/v1/requests/?IDAuthor__username=andrey&Status=new
     9) Поиск вида api/v1/requests/?search=тест
     """
     queryset = Request.objects.all()
@@ -38,7 +38,7 @@ class RequestViewSet(viewsets.ModelViewSet):
         'IDWork__Name', 'IDWork__IDService__Name',
         'DateOfCreation',
         'Name', 'Сomment',
-        'IDAutor__first_name', 'IDAutor__last_name',
+        'IDAuthor__first_name', 'IDAuthor__last_name',
         'IDExecutor__first_name', 'IDExecutor__last_name',
         'IDResponsibilityGroup__Name',
     )
@@ -46,7 +46,7 @@ class RequestViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         id_responsibility_group = ResponsibilityGroup.objects.get(Default=True)
         serializer.save(
-            IDAutor=self.request.user,
+            IDAuthor=self.request.user,
             IDResponsibilityGroup=id_responsibility_group
         )
 
@@ -80,7 +80,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = (
-        'IDRequest', 'Date', 'IDAutor',
+        'IDRequest', 'Date', 'IDAuthor',
         'IDRecipient', 'Status',
     )
     search_fields = ('Text',)
@@ -92,7 +92,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         request = get_object_or_404(Request, id=self.kwargs.get('request_id'))
         serializer.save(
-            IDAutor=self.request.user,
+            IDAuthor=self.request.user,
             IDRequest=request
         )
 

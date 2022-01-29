@@ -22,20 +22,20 @@
           <div class="col" style="margin: 10px; background-color: hsla(214, 89%, 48%, 0.747);border-radius: 10px;">
             <h5 style="text-align: center; color: rgb(255, 255, 255);"> Автор:</h5>
             <hr style="color: rgb(255, 255, 255);margin-top: 5px;">
-            {% if request_detail.IDAutor.Profile.Photo %} 
-              <img src="{{request_detail.IDAutor.Profile.Photo.url}}" class="img-fluid rounded img-thumbnail"  alt="Фото" style="height:100px;">
+            {% if request_detail.IDAuthor.Profile.Photo %}
+              <img src="{{request_detail.IDAuthor.Profile.Photo.url}}" class="img-fluid rounded img-thumbnail"  alt="Фото" style="height:100px;">
             {% else %}
               <img src="{% static 'no_photo_person.jpg' %}" class="img-fluid rounded img-thumbnail"  alt="Фото" style="height: 100px;">              
             {% endif %}
             <br>
             <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>ФИО:</b><br>
-              {{request_detail.IDAutor.last_name}} {{request_detail.IDAutor.first_name}}</label><br>
+              {{request_detail.IDAuthor.last_name}} {{request_detail.IDAuthor.first_name}}</label><br>
             <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);" ><b>Отдел:</b><br>
-              {{request_detail.IDAutor.Profile.Department}}</label><br>
+              {{request_detail.IDAuthor.Profile.Department}}</label><br>
             <label for="ServiceList" class="form-label" style="margin-top: 10px; color: rgb(253, 253, 253);"><b>Телефон:</b><br>
-              {{request_detail.IDAutor.Profile.Phone}} </label><br>
+              {{request_detail.IDAuthor.Profile.Phone}} </label><br>
             <label for="ServiceList" class="form-label" style="margin-top: 10px;color: rgb(253, 253, 253);"><b>E-mail:</b><br>  
-              <a href= "mailto:{{request_detail.IDAutor.email}}" style="color: rgb(255, 255, 255);">{{request_detail.IDAutor.email}}</a></label><br>                         
+              <a href= "mailto:{{request_detail.IDAuthor.email}}" style="color: rgb(255, 255, 255);">{{request_detail.IDAuthor.email}}</a></label><br>
           </div>  
         
           <div class="col-3" style="margin: 10px; background-color: hsla(214, 89%, 48%, 0.747);border-radius: 10px;">
@@ -80,7 +80,7 @@
               <hr style="color: rgb(255, 255, 255);margin-top: 5px;">
 
             <div>
-              {{request_detail.Сomment}}
+              {{request_detail.Comment}}
             </div>
           </div>          
         </div>         

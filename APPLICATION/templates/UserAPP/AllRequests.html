@@ -80,7 +80,7 @@
                   <div class="accordion-item">
                     <h2 class="accordion-header" id="heading{{Service.grouper|cut:" "}}">
                       <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{Service.grouper|cut:" "}}" aria-expanded="true" aria-controls="collapse{{Service.grouper|cut:" "}}">
-                        {{Service.grouper}}  ({{Service.list|Len}})
+                        {{Service.grouper}}  ({{Service.list|length }})
                       </button>
                     </h2>
                     <div id="collapse{{Service.grouper|cut:" "}}" class="accordion-collapse collapse" aria-labelledby="heading{{Service.grouper|cut:" "}}" data-bs-parent="#accordion">
@@ -112,7 +112,7 @@
                                   {{ request.Name }}
                                 </td>
                                 <td>
-                                  {{ request.IDAutor.get_full_name }}
+                                  {{ request.IDAuthor.get_full_name }}
                                 </td>
                                 <td>
                                   {% if request.IDExecutor != None %}
@@ -123,7 +123,7 @@
                                   {{ request.Status }}
                                 </td>
                                 <td style="text-align: center;">
-                                  {% if request.Status == 'on_check' and request.IDAutor == user %}
+                                  {% if request.Status == 'on_check' and request.IDAuthor == user %}
                                   <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#Modal{{request.id}}"> ? </button>
                                   {% elif request.Rating == None %}
                                     ---

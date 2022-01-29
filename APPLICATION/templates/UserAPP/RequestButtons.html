@@ -13,7 +13,7 @@
     </div>
     {# ЗАГОЛОВОК #}
     <div class="col" align="center">
-    <h4 style="color: rgb(255, 255, 255);">Заявка №{{request_detail.id}} {{request_detail.Status}}</h4>
+    <h4 style="color: rgb(255, 255, 255);">Заявка №{{request_detail.id}}. {{status}}</h4>
   </div>
     {# ОЦЕНКА #}
     <div class="col" align="right">
@@ -36,31 +36,31 @@
             <form action="/user-app/set-status/" method="POST">
               {% csrf_token %}
               <input type="hidden" name="id" value="{{request_detail.id}}">
-              {% if request_detail.Status == 'new' %}
+              {% if request_detail.Status == 'new' and user.Profile.IDResponsibilityGroup %}
                 <input type="hidden" name="Status" value="in_work">
                 <button type="submit" class="btn btn-success scale" style="width: 100%;">Взять в работу</button>
               {% elif request_detail.Status == 'in_work' and request_detail.IDExecutor == user %}
                 <input type="hidden" name="Status" value="on_check">
                 <button type="submit" class="btn btn-warning scale" style="width: 100%;">Завершить работу</button>
-              {% elif request_detail.Status == 'on_check' and request_detail.IDAutor == user %}
+              {% elif request_detail.Status == 'on_check' and request_detail.IDAuthor == user %}
                 <input type="hidden" name="Status" value="in_work">
                 <button type="submit" class="btn btn-warning scale" style="width: 100%;">На доработку</button>
               {% else %}
-                <button disabled type="submit" class="btn btn-warning scale" style="width: 100%;">Завершить работу</button>
+                <button disabled type="submit" class="btn btn-warning scale" style="width: 100%;">На доработку</button>
               {% endif %}
             </form>
         </div>
         {# Кнопка эскалирования заявки #}
         <div class="col">
-            {% if request_detail.Status == 'on_check' or request_detail.Status == 'completed' %}
-              <button disabled type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
+            {% if request_detail.IDResponsibilityGroup == user.Profile.IDResponsibilityGroup %}
+              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
             {% else %}
-              <button type="button" class="btn btn-danger scale" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
+              <button disabled type="button" class="btn btn-danger scale" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
             {% endif %}
         </div>
         {# Кнопка оценки заявки #}
         <div class="col">
-            {% if request_detail.Status == 'on_check' and request_detail.IDAutor == user %}
+            {% if request_detail.Status == 'on_check' and request_detail.IDAuthor == user %}
               <button type="button" class="btn btn-primary scale" data-bs-toggle="modal" data-bs-target="#RatingModal" style="width: 100%;">Оценить</button>
             {% else %}
               <button disabled type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RatingModal" style="width: 100%;">Оценить</button>

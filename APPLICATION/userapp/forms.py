@@ -17,7 +17,7 @@ class RequestCreatingForm(forms.Form):
         label='Тема',
         help_text='Введите краткую тему заявки',
         )
-    Сomment = CharField(
+    Comment = CharField(
         required=True,
         widget=forms.Textarea(),
         label='Содержание',
@@ -34,8 +34,8 @@ class RequestCreatingForm(forms.Form):
             raise forms.ValidationError('Слишком короткая тема')
         return Name
 
-    def clean_Сomment(self):
-        Comment = self.cleaned_data['Сomment']
+    def clean_Comment(self):
+        Comment = self.cleaned_data['Comment']
         if len(Comment) < 4:
             raise forms.ValidationError('Слишком короткое содержание')
         return Comment

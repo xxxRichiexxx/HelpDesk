@@ -35,7 +35,7 @@ class WorkSerializer(serializers.ModelSerializer):
 
 
 class RequestViewSerializer(serializers.ModelSerializer):
-    IDAutor = UserSerializer(read_only=True, many=False)
+    IDAuthor = UserSerializer(read_only=True, many=False)
     IDExecutor = UserSerializer(read_only=True, many=False)
     IDResponsibilityGroup = serializers.SlugRelatedField(
         slug_field='Name',
@@ -66,7 +66,7 @@ class RequestUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
         exclude = [
-            'IDAutor',
+            'IDAuthor',
             'Rating',
             'DateOfCreation',
         ]
@@ -85,9 +85,9 @@ class MessageViewOrCreateSerializer(serializers.ModelSerializer):
         model = Message
         fields = '__all__'
         read_only_fields = [
-            'IDAutor',
+            'IDAuthor',
             'IDRequest',
-            'Status'
+            'Status',
         ]
 
 
@@ -97,6 +97,6 @@ class MessageChangeSerializer(serializers.ModelSerializer):
         model = Message
         fields = '__all__'
         read_only_fields = [
-            'IDAutor',
+            'IDAuthor',
             'IDRequest'
         ]
