@@ -47,10 +47,10 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'crispy_forms',
     'rest_framework',
-    'django_filters', # функционал фильтрации данных по запросу
+    'django_filters',  # функционал фильтрации данных по запросу
     'rest_framework.authtoken',  # аутентификация по токену
-    'djoser', # аутентификация по JWT
-    'drf_yasg', # автоматическое формирование документации в формате Swagger и ReDoc
+    'djoser',  # аутентификация по JWT
+    'drf_yasg',  # автоматическое формирование документации в формате Swagger и ReDoc
     'registration',
     'authentication',
     'userapp',
@@ -59,10 +59,6 @@ INSTALLED_APPS = [
     'search',
     'analytics',
     'api',
-    # General use templates & template tags (should appear first)
-    # 'adminlte3',
-    # Optional: Django admin theme (must be before django.contrib.admin)
-    # 'adminlte3_theme',
 ]
 
 MIDDLEWARE = [
@@ -169,6 +165,18 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'api.throttling.BurstRateUserThrottle',
+        'api.throttling.SustainedRateUserThrottle',
+        'api.throttling.BurstRateAnonThrottle',
+        'api.throttling.SustainedRateAnonThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'burst_user': '10/second',
+        'sustained_user': '3600/hour',
+        'burst_anon': '1/second',
+        'sustained_anon': '1800/hour',
+    }
 }
 
 SIMPLE_JWT = {
