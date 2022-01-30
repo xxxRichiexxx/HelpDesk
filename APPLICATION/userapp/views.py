@@ -235,9 +235,6 @@ class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
             context['user_messages_count'] -= readed_messages
         if self.kwargs['type'] == 'Logs':
             context['logs'] = Log.objects.filter(IDRequest=context['request_detail'])
-        for item in STATUS_CHOICES:
-            if item[0] == context['request_detail'].Status:
-                context['status'] = item[1]
         return context
 
     def get_template_names(self):
