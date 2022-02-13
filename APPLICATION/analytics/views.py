@@ -95,16 +95,21 @@ class Analytics(LoginRequiredMixin, ContextProcessor, TemplateView):
             ).values('Status').count()
 
         # Среднее время выполнения заявки
-        context['average_execution_time'] = round(
-            Request.objects.filter(
-                Status='completed',
-                DateOfCreation__month=context['current_month'].month,
-                DateOfCreation__year=context['current_month'].year
-            ).annotate(
-                execution_time=F('DateOfComplete') - F('DateOfCreation')
-            ).aggregate(Avg('execution_time'))['execution_time__avg'].total_seconds()/60,
-            0)
+        average_execution_time = Request.objects.filter(
+            Status='completed',
+            DateOfCreation__month=context['current_month'].month,
+            DateOfCreation__year=context['current_month'].year
+        ).annotate(
+            execution_time=F('DateOfComplete') - F('DateOfCreation')
+        ).aggregate(Avg('execution_time'))['execution_time__avg']
+        if average_execution_time:
+            context['average_execution_time'] = round(average_execution_time.total_seconds()/60, 0)
+        else:
+            context['average_execution_time'] = 0
 
         # Доля просроченных заявок
-        context['lost_requests_percent'] = round(lost_requests/context['all_requests_count']*100, 0)
+        try:
+            context['lost_requests_percent'] = round(lost_requests/context['all_requests_count']*100, 0)
+        except ZeroDivisionError:
+            context['lost_requests_percent'] = 0
         return context
