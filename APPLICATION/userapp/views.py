@@ -10,6 +10,8 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.views.decorators.http import require_POST
 from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.conf import settings
 
 from .forms import MessageTextForm, RatingForm, RequestCreatingForm
 from .models import (Log, Message, Request, ResponsibilityGroup,
@@ -250,7 +252,10 @@ class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
 def set_status(request):
     """Устанавливает статус заявки в пределенном порядке."""
     request_id = request.POST.get('id')
-    request_item = get_object_or_404(Request, id=request_id)
+    request_item = get_object_or_404(
+        Request.objects.select_related('IDAuthor'),
+        id=request_id,
+    )
     old_status = request_item.Status
     new_status = request.POST.get('Status')
     # Перевод заявки из состояния "Новая" в состояние "В работе"
@@ -278,6 +283,14 @@ def set_status(request):
     new_log = Log(Action=f'{request.user}: установлен статус "{new_status}"',
                   IDRequest=request_item)
     new_log.save()
+    # Отправляем письмо автору заявки о смене статуса.
+    send_mail(
+        f'Изменен статус Вашей заявки №{request_id}',
+        f'Изменен статус Вашей заявки №{request_id} - {request_item.get_Status_display()}',
+        settings.EMAIL_HOST_USER,
+        [request_item.IDAuthor.email],
+        fail_silently=True,
+    )
     return redirect(request.META.get('HTTP_REFERER'))
 
 
