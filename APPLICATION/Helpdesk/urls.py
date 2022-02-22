@@ -5,7 +5,8 @@ from django.urls import include, path
 from index.views import Index
 
 urlpatterns = [
-    path('', Index.as_view()),    
+    path('', Index.as_view()),
+    path('', include('social_django.urls', namespace='social')),
     path('registration/', include('registration.urls', namespace='registration')),
     path('authentication/', include('authentication.urls', namespace='authentication')),
     path('authentication/', include('django.contrib.auth.urls')),

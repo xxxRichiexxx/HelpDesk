@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
+
 {% load MyFilters %}
+{% load static %}
+
 {% block content %}
     <div class="container" style="margin-top: 10px;">
         <div class="row">
@@ -81,6 +84,12 @@
                     </a>
                   </div>
                 </form>
+                <hr>
+                <h6>Войти через:</h6>
+                <a href="{% url 'social:begin' 'github' %}">
+                    <img src="{% static 'GitHub-Logo.png' %}" width="90" height="50"  >
+                </a>
+                {#    <a class="btn btn-primary" href="{% url 'social:begin' 'vk-oauth2' %}">#}
               </div> <!-- card body -->
             </div> <!-- card -->
 
@@ -90,4 +99,5 @@
           </div>
         </div>
     </div>
+
 {% endblock %}   
