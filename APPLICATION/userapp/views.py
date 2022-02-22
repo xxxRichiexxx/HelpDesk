@@ -10,12 +10,12 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.views.decorators.http import require_POST
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
 from django.conf import settings
 
 from .forms import MessageTextForm, RatingForm, RequestCreatingForm
 from .models import (Log, Message, Request, ResponsibilityGroup,
                      Service, Work, STATUS_CHOICES)
+from Helpdesk.tasks import email
 
 User = get_user_model()
 
@@ -284,12 +284,11 @@ def set_status(request):
                   IDRequest=request_item)
     new_log.save()
     # Отправляем письмо автору заявки о смене статуса.
-    send_mail(
-        f'Изменен статус Вашей заявки №{request_id}',
-        f'Изменен статус Вашей заявки №{request_id} - {request_item.get_Status_display()}',
+    email.delay(
+        request_id,
         settings.EMAIL_HOST_USER,
-        [request_item.IDAuthor.email],
-        fail_silently=True,
+        request_item.IDAuthor.email,
+        new_status,
     )
     return redirect(request.META.get('HTTP_REFERER'))
 
