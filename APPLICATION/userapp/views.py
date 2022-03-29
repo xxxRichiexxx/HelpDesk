@@ -15,7 +15,7 @@ from django.conf import settings
 from .forms import MessageTextForm, RatingForm, RequestCreatingForm
 from .models import (Log, Message, Request, ResponsibilityGroup,
                      Service, Work, STATUS_CHOICES)
-from Helpdesk.tasks import email
+from userapp.tasks import email
 
 User = get_user_model()
 
@@ -283,7 +283,6 @@ def set_status(request):
     new_log = Log(Action=f'{request.user}: установлен статус "{new_status}"',
                   IDRequest=request_item)
     new_log.save()
-    # Отправляем письмо автору заявки о смене статуса.
     email.delay(
         request_id,
         settings.EMAIL_HOST_USER,

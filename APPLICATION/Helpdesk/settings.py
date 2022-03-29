@@ -32,6 +32,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    'helpdesk.ru',
 ]
 
 INTERNAL_IPS = [
@@ -62,7 +63,7 @@ INSTALLED_APPS = [
     'search',
     'analytics',
     'api',
-    'social_django',
+    'social_django',  # Аутентификация через OAuth 2.0
 ]
 
 MIDDLEWARE = [
@@ -140,10 +141,6 @@ LANGUAGE_CODE = 'ru-ru'
 
 # USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
@@ -188,6 +185,7 @@ SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+# Email send related settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = os.getenv("EMAIL_HOST")
@@ -195,21 +193,35 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
+# OAuth related settings
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.vk.VKOAuth2',
+    # 'social_core.backends.vk.VKOAuth2',
     'social_core.backends.github.GithubOAuth2',
+    # 'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.mailru.MRGOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_VK_OAUTH2_KEY')
-SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+# SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_VK_OAUTH2_KEY')
+# SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_VK_OAUTH2_SECRET')
 
 SOCIAL_AUTH_GITHUB_KEY = os.getenv('SOCIAL_AUTH_GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.getenv('SOCIAL_AUTH_GITHUB_SECRET')
 
-# REDIS related settings
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+# SOCIAL_AUTH_MAILRU_KEY = os.getenv('SOCIAL_AUTH_MAILRU_KEY')
+# SOCIAL_AUTH_MAILRU_SECRET = os.getenv('SOCIAL_AUTH_MAILRU_SECRET')
+#
+# SOCIAL_AUTH_FACEBOOK_KEY = os.getenv('SOCIAL_AUTH_FACEBOOK_KEY')
+# SOCIAL_AUTH_FACEBOOK_SECRET = os.getenv('SOCIAL_AUTH_FACEBOOK_SECRET')
+
+# REDIS related settings for Celery
 REDIS_HOST = 'localhost'
 REDIS_PORT = '6379'
+# Celery related settings
 CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'

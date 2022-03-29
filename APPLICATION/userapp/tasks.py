@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+
 from Helpdesk.celery import app
 
 @app.task
