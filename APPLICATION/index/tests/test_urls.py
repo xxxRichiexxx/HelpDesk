@@ -14,12 +14,21 @@ class IndexTest(TestCase):
 
     def setUp(self):
         self.auth_client = Client()
+        self.guest_client = Client()
         self.auth_client.force_login(self.auth_user)
 
-    def test_index(self):
+    def test_auth_index(self):
         response = self.auth_client.get('/')
         self.assertEqual(
             response.status_code,
             HTTPStatus.OK,
             'Главная страница не работает.'
+        )
+
+    def test_guest_index(self):
+        response = self.guest_client.get('/')
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.FOUND,
+            f'главная страница не возвращает должный код под гостем.',
         )

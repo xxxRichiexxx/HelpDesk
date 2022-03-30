@@ -14,9 +14,10 @@ class AnalyticsUrlsTest(TestCase):
 
     def setUp(self):
         self.auth_client = Client()
+        self.guest_client = Client()
         self.auth_client.force_login(self.auth_user)
 
-    def test_analytics(self):
+    def test_auth_analytics(self):
         url = '/analytics/'
         response = self.auth_client.get(url)
         self.assertEqual(
@@ -24,3 +25,13 @@ class AnalyticsUrlsTest(TestCase):
             HTTPStatus.OK,
             f'Страница с аналитикой не работает: {url}.'
         )
+
+    def test_guest_analytics(self):
+        url = '/analytics/'
+        response = self.guest_client.get(url)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.FOUND,
+            f'{url} не возвращает должный код под гостем.',
+        )
+
