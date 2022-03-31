@@ -73,14 +73,14 @@
                     {% if scope == 'my-requests' %} 
                     active
                     {% endif %}
-                    " aria-current="page" href="{% url 'user-app:requests' 'my-requests' 'new' %}">Мои заявки <span class="badge bg-secondary"> {{user_requests}}</span></a>
+                    " aria-current="page" style="text-align: center" href="{% url 'user-app:requests' 'my-requests' 'new' %}">Мои заявки <span class="badge bg-secondary"> {{user_requests}}</span></a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link scale
                     {% if scope == 'i-executor' %}
                     active
                     {% endif %}
-                    " aria-current="page" href="{% url 'user-app:requests' 'i-executor' 'new' %}">Я исполнитель</a>
+                    " aria-current="page" style="text-align: center" href="{% url 'user-app:requests' 'i-executor' 'new' %}">Я исполнитель</a>
                   </li>
                   {% if group %}          
                     <li class="nav-item">
@@ -88,7 +88,7 @@
                       {% if scope == 'group-requests' %} 
                       active
                       {% endif %}
-                      " aria-current="page" href="{% url 'user-app:requests' 'group-requests' 'new' %}">Заявки группы <span class="badge bg-secondary"> {{group_requests}} </span></a>
+                      " aria-current="page" style="text-align: center"  href="{% url 'user-app:requests' 'group-requests' 'new' %}">Заявки группы <span class="badge bg-secondary"> {{group_requests}} </span></a>
                     </li>
                   {% endif %} 
         
@@ -123,7 +123,7 @@
         </div>
     </nav>
   </header>
-  <main style="margin-top: 80px">
+  <main style="margin-top: 100px">
     {% block content %}
         {# Контент будет размещаться тут. #}
     {% endblock %}
@@ -144,7 +144,11 @@
         {% endfor %}
         <form method="POST" action="/user-app/clean-messages/">
             {% csrf_token %}
-            <button type="submit" class="btn btn-secondary">Очистить</button>
+            {%  if user_messages %}
+                <button type="submit" class="btn btn-secondary">Очистить</button>
+            {% else %}
+                <h6> У вас нет сообщений.</h6>
+            {%  endif %}
         </form>
       </div>
     </div>
