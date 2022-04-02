@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
+from django.views.generic import TemplateView
 
 from registration.forms import RegistrationForm
 from registration.models import Profile
+from userapp.views import ContextProcessor
 
 User = get_user_model()
 
@@ -39,3 +41,7 @@ def registration(request):
         'registration/registration.html',
         {'form': form}
     )
+
+
+class ProfileView(ContextProcessor, TemplateView):
+    template_name = 'registration/profile.html'

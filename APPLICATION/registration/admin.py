@@ -8,10 +8,13 @@ class UserInline(admin.StackedInline):
     model = Profile
     can_delete = False
  
-# Определяем новый класс настроек для модели User
+
+# Определяем новый класс настроек для моде
+# ли User
 class UserAdmin(UserAdmin):
     inlines = (UserInline, )
  
+
 # Перерегистрируем модель User
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

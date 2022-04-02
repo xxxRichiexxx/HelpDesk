@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container" style="margin-top: 10px;">
+        {# Строка с заголовком #}
+        <div class="row" style="margin-top: 10px;">
+            <h4 style="color: rgb(255, 255, 255); text-align: center">Профиль пользователя (страница в разработке):</h4>
+        </div>
+        <div class="row custom-shadow" style="border:1px solid rgba(218, 216, 216, 0.938); border-radius: 10px; background-color: rgb(255, 255, 255)">
+          <div class="col" style="margin: 10px;">
+              <label class="form-label" style="margin-top: 10px;"><b>Логин:</b>
+                {{ user.username }}</label><br>
+              <label class="form-label" style="margin-top: 10px;"><b>Имя:</b>
+                {{ user.first_name }}</label><br>
+              <label class="form-label" style="margin-top: 10px;"><b>Фамилия:</b>
+                {{ user.last_name }}</label><br>
+              <label class="form-label" style="margin-top: 10px;"><b>e-mail:</b>
+                {{ user.email }}</label><br>
+              <label class="form-label" style="margin-top: 10px;"><b>Отдел:</b>
+                {{ user.Profile.Department }}</label><br>
+              <label class="form-label" style="margin-top: 10px;"><b>Телефон:</b>
+                {{ user.Profile.Phone }}</label><br>
+              <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Редактировать</button>
+          </div>
+          <div class="col" style="margin: 10px;">
+                <img class="img-fluid rounded img-thumbnail" src="{{ user.Profile.Photo.url }}">
+          </div>
+        </div>
+    </div>
+{% endblock %}

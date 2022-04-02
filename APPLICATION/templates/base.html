@@ -62,7 +62,7 @@
                           <hr>
                         <li><a class="dropdown-item" href="/admin/">Администрирование</a></li>
                           <hr>
-                        <li><a class="dropdown-item" href="#">Профиль</a></li>
+                        <li><a class="dropdown-item" href="{% url 'registration:profile' %}">Профиль</a></li>
                         <li><a class="dropdown-item" href="/help/">Справка</a></li>
                           <hr>
                         <li><a class="dropdown-item" href="{% url 'authentication:logout' %}">Выйти</a></li>
@@ -75,21 +75,22 @@
                     {% endif %}
                     " aria-current="page" style="text-align: center" href="{% url 'user-app:requests' 'my-requests' 'new' %}">Мои заявки <span class="badge bg-secondary"> {{user_requests}}</span></a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link scale
-                    {% if scope == 'i-executor' %}
-                    active
-                    {% endif %}
-                    " aria-current="page" style="text-align: center" href="{% url 'user-app:requests' 'i-executor' 'new' %}">Я исполнитель</a>
-                  </li>
-                  {% if group %}          
-                    <li class="nav-item">
-                      <a class="nav-link scale
-                      {% if scope == 'group-requests' %} 
-                      active
-                      {% endif %}
-                      " aria-current="page" style="text-align: center"  href="{% url 'user-app:requests' 'group-requests' 'new' %}">Заявки группы <span class="badge bg-secondary"> {{group_requests}} </span></a>
-                    </li>
+                  {% if group %}
+                      <li class="nav-item">
+                        <a class="nav-link scale
+                        {% if scope == 'i-executor' %}
+                        active
+                        {% endif %}
+                        " aria-current="page" style="text-align: center" href="{% url 'user-app:requests' 'i-executor' 'new' %}">Я исполнитель</a>
+                      </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link scale
+                        {% if scope == 'group-requests' %}
+                        active
+                        {% endif %}
+                        " aria-current="page" style="text-align: center"  href="{% url 'user-app:requests' 'group-requests' 'new' %}">Заявки группы <span class="badge bg-secondary"> {{group_requests}} </span></a>
+                      </li>
                   {% endif %} 
         
                   <li class="nav-item dropdown scale">

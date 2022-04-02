@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Изменен статус заявки №{{request_id}}</title>
+</head>
+<body>
+<div style="background: #27A5E7; border-radius: 10px; padding: 10px">
+    <h3 style="color: rgb(255, 255, 255); text-align: center">Уважаемый пользователь сервиса <span style="color:red">Help</span>desk,</h3>
+    <p style="color: rgb(255, 255, 255);">Изменен статус Вашей заявки №{{request.id}} ({{request.Name}}).<br>
+        {% if request.Status == 'in_work' %}
+            Ваша заявка взята в работу.<br>
+        {% elif request.Status == 'on_check' %}
+            Ваша заявка выполнена и ожидает проверки.<br>
+        {% else %}
+            Новый статус: {{ request.Status }}.<br>
+        {% endif %}
+    Для получения детальной информации перейдите по
+        <a href="http://127.0.0.1:8000/user-app/my-requests/new/{{request.id}}/info/?page=1&id_service=None">ссылке</a>:</p>
+</div>
+</body>
+</html>

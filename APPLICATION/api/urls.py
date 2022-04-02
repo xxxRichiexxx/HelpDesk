@@ -26,9 +26,9 @@ urlpatterns = [
 # Настраиваем автоматическую документацию для API
 schema_view = get_schema_view(
    openapi.Info(
-      title="HelpDesk API",
-      default_version='v1',
-      description="Документация для приложения HelpDesk",
+       title="HelpDesk API",
+       default_version='v1',
+       description="Документация для приложения HelpDesk",
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),

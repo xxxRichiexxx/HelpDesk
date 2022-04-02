@@ -78,10 +78,11 @@ class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
     paginate_by = 10
     template_name = 'UserAPP/userapp.html'
 
-    def get(self, request, *args, **kwargs):
+    def get_queryset(self):
         """
         Переопределяем данный метод,
         чтобы получить заявки, относящиеся к заданной области видимости
+        и применить к ним фильтрацию.
         """
         basic_query = Request.objects.select_related(
             'IDWork',
@@ -102,23 +103,16 @@ class UserAPP(LoginRequiredMixin, ContextProcessor, ListView):
             self.requests = basic_query.filter(IDExecutor=self.request.user)
         else:
             self.requests = basic_query.filter(IDAuthor=self.request.user)
-        return super().get(request, *args, **kwargs)
 
-    def get_queryset(self):
-        """
-        Переопределяем данный метод класса,
-        чтобы применить к отображаемым заявкам фильтрацию
-        (новые, в работе и т.п).
-        """
-        self.filter = self.kwargs['filter']
-        if self.filter == 'lost':
+        filter_value = self.kwargs['filter']
+        if filter_value == 'lost':
             return self.requests.filter(
                 Q(Status='new') | Q(Status='in_work'),
                 DateOfCreation__lt=dt.datetime.now() -
                 F('IDWork__ReactionTime') -
                 F('IDWork__TimeOfExecution')
             )
-        return self.requests.filter(Status=self.filter)
+        return self.requests.filter(Status=filter_value)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -189,25 +183,6 @@ class CreateRequest2(LoginRequiredMixin, ContextProcessor, FormView):
         return super().form_valid(form)
 
 
-@require_POST
-@login_required
-def set_rating(request):
-    """Устанавливаем рейтинг(оценку) для заявки."""
-    request_id = request.POST.get('request_id')
-    request_item = get_object_or_404(Request, id=request_id)
-    form = RatingForm(request.POST)
-    if request.user == request_item.IDAuthor and form.is_valid():
-        cd = form.cleaned_data
-        request_item.Rating = cd['Rating']
-        request_item.Status = 'completed'
-        request_item.DateOfComplete = dt.datetime.now()
-        request_item.save()
-        new_log = Log(Action=f'Заявка оценена {request.user} и переведена в состояние "Выполнена"',
-                      IDRequest=request_item)
-        new_log.save()
-    return redirect(request.META.get('HTTP_REFERER'))
-
-
 class RequestDetail(LoginRequiredMixin, ContextProcessor, DetailView):
     """
     Выводит детализацию по заявке.
@@ -273,7 +248,8 @@ def set_status(request):
            old_status == STATUS_CHOICES[1][0] and
            request.user.Profile.IDResponsibilityGroup) or
           (new_status == STATUS_CHOICES[3][0] and
-           old_status == STATUS_CHOICES[2][0])):
+           old_status == STATUS_CHOICES[2][0] and
+           request.user.Profile.IDResponsibilityGroup)):
         pass
     # При остальных вариантах переходов состояний делаем редирект.
     else:
@@ -283,12 +259,14 @@ def set_status(request):
     new_log = Log(Action=f'{request.user}: установлен статус "{new_status}"',
                   IDRequest=request_item)
     new_log.save()
-    email.delay(
-        request_id,
-        settings.EMAIL_HOST_USER,
-        request_item.IDAuthor.email,
-        new_status,
-    )
+    try:
+        email.delay(
+            request_id,
+            settings.EMAIL_HOST_USER,
+            request_item.IDAuthor.email,
+        )
+    except Exception:                                   # Добавить логирование
+        print('Письмо не отправленою')
     return redirect(request.META.get('HTTP_REFERER'))
 
 
@@ -298,7 +276,8 @@ def excalation(request):
     """Эскалируем заявку."""
     request_id = request.POST.get('id')
     request_item = get_object_or_404(Request, id=request_id)
-    if request.user.Profile.IDResponsibilityGroup == request_item.IDResponsibilityGroup:
+    if (request.user.Profile.IDResponsibilityGroup == request_item.IDResponsibilityGroup and
+            request_item.Status in (STATUS_CHOICES[0][0], STATUS_CHOICES[1][0])):
         group_id = request.POST.get('group_id')
         group_item = get_object_or_404(ResponsibilityGroup, id=group_id)
         request_item.IDResponsibilityGroup = group_item
@@ -306,6 +285,25 @@ def excalation(request):
         request_item.Status = 'new'
         request_item.save()
         new_log = Log(Action=f'Заявка эскалирована {request.user} на "{group_item.Name}"',
+                      IDRequest=request_item)
+        new_log.save()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+@require_POST
+@login_required
+def set_rating(request):
+    """Устанавливаем рейтинг(оценку) для заявки."""
+    request_id = request.POST.get('request_id')
+    request_item = get_object_or_404(Request, id=request_id)
+    form = RatingForm(request.POST)
+    if request.user == request_item.IDAuthor and form.is_valid():
+        cd = form.cleaned_data
+        request_item.Rating = cd['Rating']
+        request_item.Status = 'completed'
+        request_item.DateOfComplete = dt.datetime.now()
+        request_item.save()
+        new_log = Log(Action=f'Заявка оценена {request.user} и переведена в состояние "Выполнена"',
                       IDRequest=request_item)
         new_log.save()
     return redirect(request.META.get('HTTP_REFERER'))

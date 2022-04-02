@@ -52,10 +52,12 @@
         </div>
         {# Кнопка эскалирования заявки #}
         <div class="col">
-            {% if request_detail.IDResponsibilityGroup == user.Profile.IDResponsibilityGroup %}
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
+            {% if request_detail.IDResponsibilityGroup == user.Profile.IDResponsibilityGroup and request_detail.Status == 'new' %}
+                <button type="button" class="btn btn-danger scale" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
+            {% elif request_detail.IDResponsibilityGroup == user.Profile.IDResponsibilityGroup and request_detail.Status == 'in_work' %}
+                <button type="button" class="btn btn-danger scale" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
             {% else %}
-              <button disabled type="button" class="btn btn-danger scale" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
+                <button disabled type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#ExecutorModal" style="width: 100%;">Эскалировать</button>
             {% endif %}
         </div>
         {# Кнопка оценки заявки #}

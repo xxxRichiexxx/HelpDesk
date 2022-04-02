@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class RegistrationForm (forms.Form):
+class RegistrationForm(forms.Form):
     """Форма регистраци новго пользователя."""
     Name = CharField(required=True, label="Имя")
     Surname = CharField(required=True, label="Фамилия")

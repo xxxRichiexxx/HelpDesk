@@ -17,13 +17,19 @@
         </ul>
 
         <div class="row custom-shadow" style="border:1px solid rgba(218, 216, 216, 0.938); border-radius: 10px; background-color: rgb(255, 255, 255)">
-          <div class="col-8" style="margin: 10px; height: 400px; overflow: auto;">
+          <div class="col-8" style="margin: 10px; height: 510px; overflow: auto;">
             <div class="scrollspy-example">
-              {% for log in logs %}
-              <b>{{log.Date}}</b>
-              {{log.Action}}
-              <br>             
-              {% endfor %}
+                {% regroup logs by Date|date:"d-m-Y" as logs_list  %}
+                    {% for item in logs_list %}
+                        <h5>{{ item.grouper }}</h5>
+                        <hr>
+                        {% for log in item.list %}
+                            <b>{{log.Date}}</b>
+                            {{log.Action}}
+                            <br>
+                        {% endfor %}
+
+                  {% endfor %}
             </div>          
           </div>          
 

@@ -20,22 +20,31 @@
 
         <div class="row custom-shadow" style="border:1px solid rgba(218, 216, 216, 0.938); border-radius: 10px; background-color: rgb(255, 255, 255)">
           {% comment %} Блок с списком сообщений {% endcomment %}
-          <div class="col-8" style="margin: 10px; height: 400px;overflow: auto;">
+          <div class="col-8" style="margin: 10px; height: 510px;overflow: auto;">
             <div class="scrollspy-example" >
-              {% for message in messages %}
-              
-              <div class="alert alert-primary" role="alert" style ="margin-top: 20px;">
-                <b>{{message.IDAuthor.last_name}} {{message.IDAuthor.first_name}}</b> {{message.Data|date:"d.m.Y f"}}
-                {% if message.IDRecipient %}
-                  <b style="color: brown;">To @{{message.IDRecipient.last_name}} {{message.IDRecipient.first_name}}</b>
-                {% endif %}
-                </br>   
-                    {{message.Text}}<br>
-                    {% if message.File %}
-                    Файл: <a href="{{message.File.url}}" class="link-dark">{{message.File.name}}</a>
-                    {% endif %}  
-              </div>
-              {% endfor %}
+                {% regroup messages by Date|date:"d-m-Y" as messages_list %}
+                    {% for item in messages_list %}
+                        <h6 style="text-align: center">{{ item.grouper }}</h6>
+                          {% for message in item.list %}
+                              <div class="alert shadow p-3
+                              {% if message.IDAuthor == user %}
+                                alert-success
+                              {% else %}
+                              alert-primary
+                              {% endif %}
+                              " role="alert" style ="margin-top: 20px;">
+                                <b>{{message.IDAuthor.last_name}} {{message.IDAuthor.first_name}}</b> {{message.Data|date:"d.m.Y f"}}
+                                {% if message.IDRecipient %}
+                                  <b style="color: brown;">To @{{message.IDRecipient.last_name}} {{message.IDRecipient.first_name}}</b>
+                                {% endif %}
+                                </br>
+                                    {{message.Text}}<br>
+                                    {% if message.File %}
+                                    Файл: <a href="{{message.File.url}}" class="link-dark">{{message.File.name}}</a>
+                                    {% endif %}
+                              </div>
+                          {% endfor %}
+                    {% endfor %}
             </div>          
           </div>
           {% comment %} Блок с формой для отправки сообщения {% endcomment %}        
