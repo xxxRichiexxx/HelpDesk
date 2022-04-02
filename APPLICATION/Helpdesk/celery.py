@@ -10,8 +10,12 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'send-report-every-single-minute': {
+    'send-report-two-times': {
         'task': 'analytics.tasks.send_report',
         'schedule': crontab(minute=0, hour='10,17')
+    },
+    'bot-executor-every-single-minute': {
+        'task': 'userapp.tasks.bot_executor',
+        'schedule': crontab()
     },
 }
